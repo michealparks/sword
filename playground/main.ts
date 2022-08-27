@@ -47,20 +47,20 @@ directionalLight.shadow.camera.far = 20
   scene.add(mesh)
   const enter = () => {}
   const leave = () => {}
-  sword.createSensor({
+  sword.createRigidBody(mesh, {
     ccd: true,
-    mesh,
-    shape: sword.shapes.CUBOID,
+    //sensor: true,
+    collider: sword.ColliderType.Cuboid,
     type: sword.RigidBodyType.Fixed,
     hx: size / 2,
     hy: sizeY / 2,
     hz: size / 2,
-  }, enter, leave)
+  })
 }
 
 // Create demo
 const savedDemo = window.localStorage.getItem('demo') || 'boxes'
-const demoModule = await demos[`./demos/${savedDemo}.ts`]()
+await demos[`./demos/${savedDemo}.ts`]()
 
 addKeyEvents()
 run()

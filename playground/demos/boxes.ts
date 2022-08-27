@@ -21,11 +21,10 @@ for (let index = 0; index < constants.NUM_MESHES; index += 1) {
 
 boxes.instanceColor!.needsUpdate = true
 
-sword.createRigidBody({
+sword.createRigidBodies(boxes, {
   ccd: true,
-  mesh: boxes,
   type: sword.RigidBodyType.Dynamic,
-  shape: sword.shapes.CUBOID,
+  collider: sword.ColliderType.Cuboid,
   hx: halfExtents,
   hy: halfExtents,
   hz: halfExtents,

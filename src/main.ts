@@ -1,31 +1,23 @@
-import * as THREE from 'three'
-import type { Impulse, RigidBodyOptions } from './types/internal'
-import { createBodyId, createPromise, createPromiseId, execPromise } from './lib'
-import { registerDynamicBody, updateDynamicBodies } from './lib/dynamic'
-import type { RigidBodyParams } from './types'
-import { RigidBodyType } from '@dimforge/rapier3d-compat'
+import { createPromise, createPromiseId, execPromise } from './lib'
 import { events } from './constants/events'
+import { newBodies } from './lib/creators'
 import { update } from 'three-kit'
 import { updateDebugDrawer } from './debug/renderer'
+import { updateDynamicBodies } from './lib/dynamic'
 import { worker } from './lib/worker'
+
+export * from './lib/appliers'
+export * from './lib/creators'
+export * from './lib/setters'
+export * from './types'
 
 export { count } from './lib'
 export { dynamicCount } from './lib/dynamic'
-export { shapes } from './constants/shapes'
-export * from './types'
+export { ColliderType } from './constants/collider'
 export { RigidBodyType } from '@dimforge/rapier3d-compat'
-
-type Event = (ids: number[]) => void
 
 const eventmap = new Map<string, Set<any>>()
 eventmap.set('debugDraw', new Set())
-
-const sensorEvents = new Map<number, { enter: Event, leave: Event }>()
-const newBodies: RigidBodyOptions[] = []
-const newImpulses: Impulse[] = []
-const m4 = new THREE.Matrix4()
-const vec3 = new THREE.Vector3()
-const quat = new THREE.Quaternion()
 
 let currentFps = 0
 let isRunning = false
@@ -37,13 +29,11 @@ let isRunning = false
  * @param callback A callback that fires when the event is triggered.
  */
 export const on = (name: 'collisions', callback: (...args: any) => void) => {
-  // @ts-expect-error Should be defined
-  eventmap.get(name).add(callback)
+  eventmap.get(name)!.add(callback)
 }
 
 const emit = (name: string, data: any) => {
-  // @ts-expect-error Should be defined
-  for (const callback of eventmap.get(name)) {
+  for (const callback of eventmap.get(name)!) {
     callback(data)
   }
 }
@@ -116,148 +106,14 @@ export const fps = () => {
   return currentFps
 }
 
-/**
- * 
- * @param options {RigidBodyParams}
- * @param sensor 
- * @returns 
- */
-export const createRigidBody = (options: RigidBodyParams, sensor = false) => {
-  const { mesh, canSleep = true, ccd = false } = options
-  const ids = []
-
-  if (mesh instanceof THREE.InstancedMesh) {
-    for (let i = 0, l = mesh.count; i < l; i += 1) {
-      const id = createBodyId()
-      mesh.getMatrixAt(i, m4)
-      quat.setFromRotationMatrix(m4)
-      vec3.setFromMatrixPosition(m4)
-      newBodies.push({
-        canSleep,
-        ccd,
-        halfHeight: options.halfHeight ?? 0,
-        hx: options.hx ?? 0,
-        hy: options.hy ?? 0,
-        hz: options.hz ?? 0,
-        id,
-        qw: quat.w,
-        qx: quat.x,
-        qy: quat.y,
-        qz: quat.z,
-        radius: options.radius ?? 0,
-        sensor,
-        shape: options.shape,
-        type: options.type,
-        x: vec3.x,
-        y: vec3.y,
-        z: vec3.z,
-      })
-      ids.push(id)
-    }
-  } else {
-    const { position, quaternion } = mesh
-    const id = createBodyId()
-    newBodies.push({
-      canSleep,
-      ccd,
-      halfHeight: options.halfHeight ?? 0,
-      hx: options.hx ?? 0,
-      hy: options.hy ?? 0,
-      hz: options.hz ?? 0,
-      id,
-      qw: quaternion.w,
-      qx: quaternion.x,
-      qy: quaternion.y,
-      qz: quaternion.z,
-      radius: options.radius ?? 0,
-      sensor,
-      shape: options.shape,
-      type: options.type,
-      x: position.x,
-      y: position.y,
-      z: position.z,
-    })
-    ids.push(id)
-  }
-
-  if (options.type === RigidBodyType.Dynamic) {
-    registerDynamicBody(mesh)
-  }
-
-  return ids
-}
-
-export const createSensor = (options: RigidBodyParams, enter: Event, leave: Event) => {
-  const ids = createRigidBody(options)
-  sensorEvents.set(ids[0], {
-    enter,
-    leave,
-  })
-  return ids
-}
-
-export const applyImpulse = (id: number, x: number, y: number, z: number) => {
-  newImpulses.push({
-    id,
-    x,
-    y,
-    z,
-  })
-}
-
-export const applyImpulses = (impulses: Float32Array) => {
-  worker.postMessage({
-    buffer: impulses.buffer,
-    event: events.APPLY_IMPULSES,
-  }, [impulses.buffer])
-}
-
-export const applyTorqueImpulses = (impulses: Float32Array) => {
-  worker.postMessage({
-    buffer: impulses.buffer,
-    event: events.APPLY_TORQUE_IMPULSES,
-  }, [impulses.buffer])
-}
-
-export const applyLinearAndTorqueImpulses = (impulses: Float32Array) => {
-  worker.postMessage({
-    buffer: impulses.buffer,
-    event: events.APPLY_LINEAR_AND_TORQUE_IMPULSES,
-  }, [impulses.buffer])
-}
-
 const tick = () => {
   if (newBodies.length > 0) {
-    const chunk = newBodies.splice(0, 100)
+    const chunk = newBodies.splice(0, 200)
     worker.postMessage({
       bodies: chunk,
       event: events.CREATE_RIGIDBODIES,
     })
   }
-
-  if (newImpulses.length > 0) {
-    const chunk = newImpulses.splice(0, 100)
-    worker.postMessage({
-      event: events.APPLY_IMPULSES,
-      impulses: chunk,
-    })
-  }
-}
-
-/**
- * Sets the gravity of the physics world.
- *
- * @param x The gravity x component.
- * @param y The gravity y component.
- * @param z The gravity z component.
- */
-export const setGravity = (x: number, y: number, z: number) => {
-  worker.postMessage({
-    event: events.SET_GRAVITY,
-    x,
-    y,
-    z,
-  })
 }
 
 worker.addEventListener('message', (message) => {

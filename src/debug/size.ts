@@ -1,5 +1,5 @@
-export const roughSizeOfObject = (object) => {
-  const objectList = []
+export const roughSizeOfObject = (object: any) => {
+  const objectList: any[] = []
   const stack = [object]
   let bytes = 0
 
@@ -19,8 +19,10 @@ export const roughSizeOfObject = (object) => {
     ) {
       objectList.push(value)
 
-      for (const i in value) {
-        stack.push(value[i])
+      for (const key in value) {
+        if (Object.hasOwn(value, key)) {
+          stack.push(value[key])
+        }
       }
     }
   }

@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import * as constants from '../constants'
 import * as sword from '../../src/main'
 import { randomColor } from './lib/colors'
-import { mesh, indexes, vertices } from './lib/meshes'
+import { mesh, radius } from './lib/spheres'
 
 sword.setGravity(0, 0, 0)
 
@@ -13,7 +13,7 @@ m4.copy(mesh.matrixWorld).invert()
 
 const color = new THREE.Color()
 
-const size = 5
+const size = 15
 const random = () => {
   return Math.random() * size - (size / 2)
 }
@@ -27,22 +27,16 @@ for (let index = 0; index < constants.NUM_MESHES; index += 1) {
 
 mesh.instanceColor!.needsUpdate = true
 
-const ids = sword.createRigidBody({
-  mesh,
+const ids = sword.createRigidBodies(mesh, {
   type: sword.RigidBodyType.Dynamic,
-  shape: sword.shapes.BALL,
-  radius: 0.1,
-  // matrix: new Float32Array(m4.elements),
+  collider: sword.ColliderType.Ball,
+  radius,
   canSleep: false,
-  // vertices,
-  // indexes,
 })
-
 
 setTimeout(() => {
   {
     const impulses = new Float32Array(ids.length * 4)
-  
     const scale = 0.05
     const randomTorque = () => {
       return (Math.random() * scale) - (scale / 2)

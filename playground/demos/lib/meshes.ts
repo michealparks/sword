@@ -1,15 +1,77 @@
 import * as THREE from 'three'
-import { scene } from 'three-kit'
+import { scene, assets } from 'three-kit'
 import { NUM_MESHES } from '../../constants'
+import * as debug from 'three-kit/debug'
+import { CustomSinCurve } from './curve'
 
-const radius = 0.1
-const geometry = new THREE.IcosahedronGeometry(radius)
-const material = new THREE.MeshStandardMaterial()
+type GLTF = { scene: THREE.Scene }
 
-export const mesh = new THREE.InstancedMesh(geometry, material, NUM_MESHES)
+const [ship, asteroid] = await Promise.all([
+  assets.load<GLTF>('ship.glb'),
+  assets.load<GLTF>('asteroid.glb'),
+])
+
+const params = {
+  geometry: localStorage.getItem('sword.demo.mesh.geometry') ?? 'box',
+}
+
+const pane = debug.addPane('game')
+pane.addInput(params, 'geometry', {
+  options: Object.fromEntries([
+    'box',
+    'cone',
+    'icosahedron',
+    'octahedron',
+    'plane',
+    'tetrahedron',
+    'torus',
+    'torusKnot',
+    'tube',
+    'ship',
+    'asteroid',
+  ].map(entry => ([entry, entry])))
+}).on('change', () => {
+  localStorage.setItem('sword.demo.mesh.geometry', params.geometry)
+  window.location.reload()
+})
+
+const radius = 0.5
+const path = new CustomSinCurve(1)
+
+export let mesh: THREE.InstancedMesh
+
+let geometry: THREE.BufferGeometry
+
+if (params.geometry === 'asteroid') {
+  const template = asteroid.scene.getObjectByName('Asteroid') as THREE.Mesh
+  geometry = template.geometry
+  mesh = new THREE.InstancedMesh(template.geometry, template.material, NUM_MESHES)
+} else if (params.geometry === 'ship') {
+  const template = ship.scene.getObjectByName('Collider') as THREE.Mesh
+  geometry = template.geometry
+  mesh = new THREE.InstancedMesh(template.geometry, template.material, NUM_MESHES)
+} else {
+  geometry = {
+    box: new THREE.BoxGeometry(radius, radius, radius),
+    cone: new THREE.ConeGeometry(radius, radius * 2, 3),
+    cylinder: new THREE.CylinderGeometry(radius, radius, radius * 2, 5),
+    icosahedron: new THREE.IcosahedronGeometry(radius),
+    octahedron: new THREE.OctahedronGeometry(radius, 1),
+    plane: new THREE.PlaneGeometry(radius, radius),
+    tetrahedron: new THREE.TetrahedronGeometry(radius),
+    torus: new THREE.TorusGeometry(radius, radius / 3, 4, 6),
+    torusKnot: new THREE.TorusKnotGeometry(radius, radius / 3, 15, 6),
+    tube: new THREE.TubeGeometry(path, 15, radius / 2, 6, false)
+  }[params.geometry]!
+  const material = new THREE.MeshStandardMaterial()
+  material.side = THREE.DoubleSide
+  material.flatShading = true
+  mesh = new THREE.InstancedMesh(geometry, material, NUM_MESHES)
+}
+
 mesh.castShadow = true
 mesh.receiveShadow = true
 scene.add(mesh)
 
 export const vertices = new Float32Array(geometry.attributes.position.array)
-export const indexes = mesh.geometry.index ? new Float32Array(mesh.geometry.index.array) : undefined
+export const indices = mesh.geometry.index ? new Uint32Array(mesh.geometry.index.array) : undefined

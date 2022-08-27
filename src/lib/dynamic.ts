@@ -1,52 +1,66 @@
 import * as THREE from 'three'
 
-const bodies = new Set<THREE.Mesh>()
+const bodymap: Record<number, { instance: number; mesh: THREE.Mesh }> = {}
+const bodies: THREE.Mesh[] = []
 const m4 = new THREE.Matrix4()
-const vec3 = new THREE.Vector3()
 const quat = new THREE.Quaternion()
 
-export const registerDynamicBody = (body: THREE.Mesh) => {
-  bodies.add(body)
+export const registerDynamicBody = (mesh: THREE.Mesh, id: number) => {
+  bodies.push(mesh)
+  bodymap[id] = {
+    instance: -1,
+    mesh,
+  }
+}
+
+export const registerInstancedDynamicBody = (
+  mesh: THREE.InstancedMesh,
+  ids: number[]
+) => {
+  bodies.push(mesh)
+  for (let i = 0, l = ids.length; i < l; i += 1) {
+    bodymap[ids[i]] = {
+      instance: i,
+      mesh,
+    }
+  }
 }
 
 export const updateDynamicBodies = (transforms: Float32Array) => {
-  let tCursor = 1
+  for (let i = 0, l = transforms.length; i < l; i += 8) {
+    if (transforms[i] === -1) {
+      break
+    }
 
-  for (const body of bodies) {
-    if (body instanceof THREE.InstancedMesh) {
-      for (let i = 0, l = body.count; i < l; i += 1) {
-        vec3.set(
-          transforms[tCursor + 0],
-          transforms[tCursor + 1],
-          transforms[tCursor + 2]
-        )
-        quat.set(
-          transforms[tCursor + 3],
-          transforms[tCursor + 4],
-          transforms[tCursor + 5],
-          transforms[tCursor + 6]
-        )
+    const { instance, mesh } = bodymap[transforms[i]]
 
-        m4.makeRotationFromQuaternion(quat)
-        m4.setPosition(vec3)
-        body.setMatrixAt(i, m4)
-        tCursor += 7
-      }
-
-      body.instanceMatrix.needsUpdate = true
-    } else {
-      body.position.set(
-        transforms[tCursor + 0],
-        transforms[tCursor + 1],
-        transforms[tCursor + 2]
+    if (instance === -1) {
+      mesh.position.set(
+        transforms[i + 1],
+        transforms[i + 2],
+        transforms[i + 3]
       )
-      body.quaternion.set(
-        transforms[tCursor + 3],
-        transforms[tCursor + 4],
-        transforms[tCursor + 5],
-        transforms[tCursor + 6]
+      mesh.quaternion.set(
+        transforms[i + 4],
+        transforms[i + 5],
+        transforms[i + 6],
+        transforms[i + 7]
       )
-      tCursor += 7
+    } else if (mesh instanceof THREE.InstancedMesh) {
+      quat.set(
+        transforms[i + 4],
+        transforms[i + 5],
+        transforms[i + 6],
+        transforms[i + 7]
+      )
+      m4.makeRotationFromQuaternion(quat)
+      m4.setPosition(
+        transforms[i + 1],
+        transforms[i + 2],
+        transforms[i + 3]
+      )
+      mesh.setMatrixAt(instance, m4)
+      mesh.instanceMatrix.needsUpdate = true
     }
   }
 }
@@ -59,7 +73,8 @@ export const updateDynamicBodies = (transforms: Float32Array) => {
 export const dynamicCount = () => {
   let num = 0
 
-  for (const body of bodies) {
+  for (let i = 0, l = bodies.length; i < l; i += 1) {
+    const body = bodies[i]
     if (body instanceof THREE.InstancedMesh) {
       num += body.count
     } else {

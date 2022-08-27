@@ -6,7 +6,7 @@ export const addKeyEvents = () => {
     switch (event.key.toLowerCase()) {
     case 'i':
       const count = sword.dynamicCount()
-      const magnitude = 5
+      const magnitude = 20
       const impulses = new Float32Array(count * 4)
 
       for (let i = 0, j = 0; j < count; i += 4, j += 1) {

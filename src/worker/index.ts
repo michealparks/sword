@@ -1,8 +1,12 @@
+import type { RigidBodyWorkerOptions, Transform } from '../types/internal'
+import {
+  applyImpulses, applyLinearAndTorqueImpulses, applyTorqueImpulses
+} from './appliers'
+import { bodies, bodymap } from './bodies'
+import { setNextKinematicTransforms, setTransforms, setTranslation } from './setters'
 import RAPIER from '@dimforge/rapier3d-compat'
-import type { RigidBodyOptions } from './types/internal'
-import { createCollider } from './lib/colliders'
-import { events } from './constants/events'
-import { messages } from './constants/messages'
+import { createCollider } from './colliders'
+import { events } from '../constants/events'
 
 let world: RAPIER.World
 let now = 0
@@ -13,8 +17,6 @@ let tickId = -1
 let debugTickId = -1
 
 const timestep = 1000 / 90
-const bodies = new Set<RAPIER.RigidBody>()
-const bodymap = new Map<number, RAPIER.RigidBody>()
 
 const init = async (pid: number, x?: number, y?: number, z?: number) => {
   await RAPIER.init()
@@ -40,25 +42,29 @@ const tick = () => {
   fps = 1000 / (now - then)
   then = now
 
-  const transforms = new Float32Array((bodies.size * 7) + 1)
+  const transforms = new Float32Array(bodies.size * 8)
 
-  transforms[0] = messages.TRANSFORMS
-
-  let cursor = 1
+  let cursor = 0
 
   for (const body of bodies) {
+    if (body.isSleeping()) {
+      continue
+    }
+
     const translation = body.translation()
     const rotation = body.rotation()
-
-    transforms[cursor + 0] = translation.x
-    transforms[cursor + 1] = translation.y
-    transforms[cursor + 2] = translation.z
-    transforms[cursor + 3] = rotation.x
-    transforms[cursor + 4] = rotation.y
-    transforms[cursor + 5] = rotation.z
-    transforms[cursor + 6] = rotation.w
-    cursor += 7
+    transforms[cursor + 0] = body.userData as number
+    transforms[cursor + 1] = translation.x
+    transforms[cursor + 2] = translation.y
+    transforms[cursor + 3] = translation.z
+    transforms[cursor + 4] = rotation.x
+    transforms[cursor + 5] = rotation.y
+    transforms[cursor + 6] = rotation.z
+    transforms[cursor + 7] = rotation.w
+    cursor += 8
   }
+
+  transforms[cursor] = -1
 
   self.postMessage({
     buffer: transforms.buffer,
@@ -76,11 +82,15 @@ const debugTick = () => {
   }, [buffers.vertices.buffer, buffers.colors.buffer])
 }
 
-const run = (pid: number) => {
+const run = (pid: number, debug = true) => {
   now = performance.now()
   then = now
   tickId = self.setInterval(tick, timestep)
-  debugTickId = self.setInterval(debugTick, timestep * 3)
+
+  if (debug) {
+    debugTickId = self.setInterval(debugTick, timestep * 3)
+  }
+
   postMessage({
     event: events.RUN,
     pid,
@@ -96,82 +106,47 @@ const pause = (pid: number) => {
   })
 }
 
-const createRigidBody = (body: RigidBodyOptions) => {
-  const bodyDescription = new RAPIER.RigidBodyDesc(body.type)
-    .setTranslation(body.x, body.y, body.z)
+const createRigidBody = (
+  transform: Transform,
+  options: RigidBodyWorkerOptions
+) => {
+  const bodyDescription = new RAPIER.RigidBodyDesc(options.type)
+    .setTranslation(transform.x, transform.y, transform.z)
     .setRotation({
-      w: body.qw,
-      x: body.qx,
-      y: body.qy,
-      z: body.qz,
+      w: transform.qw,
+      x: transform.qx,
+      y: transform.qy,
+      z: transform.qz,
     })
-    .setCanSleep(body.canSleep)
-    .setCcdEnabled(body.ccd)
+    .setCanSleep(options.canSleep)
+    .setCcdEnabled(options.ccd)
 
-  const colliderDescription = createCollider(body)
+  const colliderDescription = createCollider(options)
     .setDensity(1.3)
-    .setFriction(0.1)
+    .setFriction(0.2)
     .setFrictionCombineRule(RAPIER.CoefficientCombineRule.Max)
     .setRestitution(0.5)
     .setRestitutionCombineRule(RAPIER.CoefficientCombineRule.Max)
     .setMass(1)
-    .setSensor(body.sensor)
+    .setSensor(options.sensor)
 
   const rigidBody = world.createRigidBody(bodyDescription)
   const collider = world.createCollider(colliderDescription, rigidBody)
 
-  if (body.type === RAPIER.RigidBodyType.Dynamic) {
+  if (options.type === RAPIER.RigidBodyType.Dynamic) {
     bodies.add(rigidBody)
   }
 
-  bodymap.set(body.id, rigidBody)
+  rigidBody.userData = transform.id
+  bodymap.set(transform.id, rigidBody)
 }
 
-const createRigidBodies = (bodies) => {
-  for (let i = 0, l = bodies.length; i < l; i += 1) {
-    createRigidBody(bodies[i])
-  }
-}
-
-const applyImpulses = (impulses: Float32Array) => {
-  for (let i = 0, l = impulses.length; i < l; i += 4) {
-    // @ts-expect-error Body should exist
-    bodymap.get(impulses[i]).applyImpulse({
-      x: impulses[i + 1],
-      y: impulses[i + 2],
-      z: impulses[i + 3],
-    }, true)
-  }
-}
-
-const applyTorqueImpulses = (impulses: Float32Array) => {
-  for (let i = 0, l = impulses.length; i < l; i += 4) {
-    // @ts-expect-error Body should exist
-    bodymap.get(impulses[i]).applyTorqueImpulse({
-      x: impulses[i + 1],
-      y: impulses[i + 2],
-      z: impulses[i + 3],
-    }, true)
-  }
-}
-
-const applyLinearAndTorqueImpulses = (impulses: Float32Array) => {
-  for (let i = 0, l = impulses.length; i < l; i += 7) {
-    const body = bodymap.get(impulses[i])
-
-    // @ts-expect-error Body should exist
-    body.applyImpulse({
-      x: impulses[i + 1],
-      y: impulses[i + 2],
-      z: impulses[i + 3],
-    }, false)
-
-    // @ts-expect-error Body should exist
-    body.applyTorqueImpulse({
-      x: impulses[i + 4],
-      y: impulses[i + 5],
-      z: impulses[i + 6],
-    }, true)
+const createRigidBodies = (bodyOptions: RigidBodyWorkerOptions[]) => {
+  for (let i = 0, l = bodyOptions.length; i < l; i += 1) {
+    const options = bodyOptions[i]
+    for (let j = 0, jl = options.instances.length; j < jl; j += 1) {
+      createRigidBody(options.instances[j], options)
+    }
   }
 }
 
@@ -201,6 +176,12 @@ self.addEventListener('message', (message) => {
     return applyLinearAndTorqueImpulses(new Float32Array(data.buffer))
   case events.SET_GRAVITY:
     return setGravity(data.x, data.y, data.z)
+  case events.SET_NEXT_KINEMATIC_TRANSFORMS:
+    return setNextKinematicTransforms(new Float32Array(data.buffer))
+  case events.SET_TRANSLATION:
+    return setTranslation(data)
+  case events.SET_TRANSFORMS:
+    return setTransforms(new Float32Array(data.buffer))
   default:
     throw new Error(`Unexpected event ${data.event}!`)
   }
