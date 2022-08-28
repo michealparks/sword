@@ -10,6 +10,7 @@ const material = new THREE.LineBasicMaterial({
 
 const geometry = new THREE.BufferGeometry()
 const lines = new THREE.LineSegments(geometry, material)
+lines.frustumCulled = false
 
 interface Buffers {
   vertices: ArrayBuffer
