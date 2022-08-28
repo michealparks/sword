@@ -49,7 +49,7 @@ directionalLight.shadow.camera.far = 20
 
   let pendingTeleports: number[] = []
 
-  sword.on('collisionEnd', id, (other) => {
+  sword.onCollision('end', id, (other) => {
     pendingTeleports.push(other)
   })
 

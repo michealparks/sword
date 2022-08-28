@@ -1,4 +1,5 @@
 import { createPromise, createPromiseId, execPromise } from './lib'
+import { emit } from './lib/events'
 import { events } from './constants/events'
 import { newBodies } from './lib/creators'
 import { update } from 'three-kit'
@@ -8,6 +9,7 @@ import { worker } from './lib/worker'
 
 export * from './lib/appliers'
 export * from './lib/creators'
+export * from './lib/events'
 export * from './lib/setters'
 export * from './types'
 
@@ -19,32 +21,26 @@ export {
 } from '@dimforge/rapier3d-compat'
 
 type Listener = (...args: any) => void
-type Events = 'collisionStart' | 'collisionEnd'
+type Events = 'start' | 'end'
 
 const eventmap = new Map<Events, Map<number, Listener[]>>()
-eventmap.set('collisionStart', new Map())
-eventmap.set('collisionEnd', new Map())
+eventmap.set('start', new Map())
+eventmap.set('end', new Map())
 
 let currentFps = 0
 let isRunning = false
 
-/**
- * Registers an event listener.
- *
- * @param name The event name.
- * @param callback A callback that fires when the event is triggered.
- */
-export const on = (name: Events, id: number, callback: Listener) => {
-  const type = eventmap.get(name)!
+export const onCollision = (event: 'start' | 'end', id: number, callback: Listener) => {
+  const type = eventmap.get(event)!
 
   if (!type.has(id)) {
     type.set(id, [])
   }
 
-  type.get(id)!.push(callback)
+  type.get(id)!.push(callback!)
 }
 
-const emit = (name: Events, id: number, data: any) => {
+const emitCollision = (name: Events, id: number, data?: unknown) => {
   const type = eventmap.get(name)!
   const callbacks = type.get(id)
 
@@ -64,9 +60,9 @@ const emitCollisionEvents = (collisions: Float32Array) => {
     const start = collisions[i + 2] === 1
 
     if (start) {
-      emit('collisionStart', id1, id2)
+      emitCollision('start', id1, id2)
     } else {
-      emit('collisionEnd', id1, id2)
+      emitCollision('end', id1, id2)
     }
   }
 }
@@ -141,11 +137,15 @@ export const fps = () => {
 
 const tick = () => {
   if (newBodies.length > 0) {
-    const chunk = newBodies.splice(0, 200)
+    const chunk = newBodies.splice(0, 10)
     worker.postMessage({
       bodies: chunk,
       event: events.CREATE_RIGIDBODIES,
     })
+
+    if (newBodies.length === 0) {
+      emit('bodiesLoaded')
+    }
   }
 }
 

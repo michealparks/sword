@@ -34,45 +34,46 @@ const ids = sword.createRigidBodies(mesh, {
   canSleep: false,
 })
 
-setTimeout(() => {
-  {
-    const impulses = new Float32Array(ids.length * 4)
-    const scale = 0.05
-    const randomTorque = () => {
-      return (Math.random() * scale) - (scale / 2)
-    }
+// setTimeout(() => {
+//   {
+//     const impulses = new Float32Array(ids.length * 4)
+//     const scale = 0.05
+//     const randomTorque = () => {
+//       return (Math.random() * scale) - (scale / 2)
+//     }
   
-    for (let i = 0, j = 0, l = ids.length; i < l; i += 1, j += 4) {
-      impulses[j + 0] = ids[i]
-      impulses[j + 1] = randomTorque()
-      impulses[j + 2] = randomTorque()
-      impulses[j + 3] = randomTorque()
-    }
+//     for (let i = 0, j = 0, l = ids.length; i < l; i += 1, j += 4) {
+//       impulses[j + 0] = ids[i]
+//       impulses[j + 1] = randomTorque()
+//       impulses[j + 2] = randomTorque()
+//       impulses[j + 3] = randomTorque()
+//     }
     
-    sword.applyTorqueImpulses(impulses)
-  }
+//     sword.applyTorqueImpulses(impulses)
+//   }
   
-}, 200)
+// }, 200)
 
-setTimeout(() => {
-  {
-    const impulses = new Float32Array(ids.length * 7)
+console.time()
+sword.once('bodiesLoaded', () => {
+  console.timeEnd()
+  console.log('loaded')
+  const impulses = new Float32Array(ids.length * 7)
   
-    const random = () => {
-      return (Math.random() - 0.5) * 2
-    }
-  
-    for (let i = 0, j = 0, l = ids.length; i < l; i += 1, j += 7) {
-      impulses[j + 0] = ids[i]
-      impulses[j + 1] = random()
-      impulses[j + 2] = random()
-      impulses[j + 3] = random()
-      impulses[j + 4] = random()
-      impulses[j + 5] = random()
-      impulses[j + 6] = random()
-    }
-  
-    sword.applyLinearAndTorqueImpulses(impulses)
-  }  
-}, 200)
+  const random = () => {
+    return (Math.random() - 0.5) * 2
+  }
+
+  for (let i = 0, j = 0, l = ids.length; i < l; i += 1, j += 7) {
+    impulses[j + 0] = ids[i]
+    impulses[j + 1] = random()
+    impulses[j + 2] = random()
+    impulses[j + 3] = random()
+    impulses[j + 4] = random()
+    impulses[j + 5] = random()
+    impulses[j + 6] = random()
+  }
+
+  sword.applyLinearAndTorqueImpulses(impulses)
+})
 
