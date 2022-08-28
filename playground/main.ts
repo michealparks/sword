@@ -2,7 +2,7 @@ import './main.css'
 import './pane'
 import '../src/debug'
 import * as THREE from 'three'
-import { scene, run, lights, camera } from 'three-kit'
+import { scene, run, lights, camera, update } from 'three-kit'
 import * as sword from '../src/main'
 import { addKeyEvents } from './lib/key-events'
 
@@ -36,22 +36,62 @@ directionalLight.shadow.camera.far = 20
 
 {
   // Create sensor
-  const size = 50
+  const radius = 50
+  const object = new THREE.Object3D()
+
+  const id = sword.createRigidBody(object, {
+    sensor: true,
+    collider: sword.ColliderType.Ball,
+    type: sword.RigidBodyType.Fixed,
+    events: sword.ActiveEvents.COLLISION_EVENTS,
+    radius,
+  })
+
+  let pendingTeleports: number[] = []
+
+  sword.on('collisionEnd', id, (other) => {
+    pendingTeleports.push(other)
+  })
+
+  update(() => {
+    if (pendingTeleports.length === 0) {
+      return
+    }
+ 
+    const translations = new Float32Array(pendingTeleports.length * 4)
+
+    for (let i = 0, j = 0, l = pendingTeleports.length; i < l; i += 1, j += 4) {
+      translations[j + 0] = pendingTeleports[i]
+      translations[j + 1] = Math.random() * 14 - 7
+      translations[j + 2] = 5
+      translations[j + 3] = Math.random() * 14 - 7
+    }
+
+    sword.setTranslations(translations, false, true)
+
+    pendingTeleports = []
+  })
+}
+
+{
+  // Create sensor
+  const size = 100
   const sizeY = 5
   const geometry = new THREE.BoxGeometry(size, sizeY, size)
   const material = new THREE.MeshStandardMaterial()
   material.transparent = true
   material.opacity = 0.1
   const mesh = new THREE.Mesh(geometry, material)
-  mesh.position.set(0, -sizeY - 1, 0)
+  mesh.position.set(0, -sizeY - 20, 0)
   scene.add(mesh)
   const enter = () => {}
   const leave = () => {}
-  sword.createRigidBody(mesh, {
-    ccd: true,
-    //sensor: true,
+
+  const id = sword.createRigidBody(mesh, {
+    sensor: true,
     collider: sword.ColliderType.Cuboid,
     type: sword.RigidBodyType.Fixed,
+    // events: sword.ActiveEvents.COLLISION_EVENTS,
     hx: size / 2,
     hy: sizeY / 2,
     hz: size / 2,

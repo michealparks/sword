@@ -40,6 +40,11 @@ const playerId = sword.createRigidBody(player, {
   hz: 1,
 })
 
+sword.setActiveCollisionTypes(
+  playerId,
+  sword.ActiveCollisionTypes.DEFAULT | sword.ActiveCollisionTypes.KINEMATIC_FIXED
+)
+
 update(() => {
   const { position, quaternion, rotation } = player
   position.x += controls.keyboard.x / 5

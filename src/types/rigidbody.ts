@@ -22,6 +22,7 @@ export interface RigidBodyOptions {
   ccd?: boolean
   type: RigidBodyTypes
   sensor?: boolean
+  events?: number
 }
 
 export interface BallRigidBodyOptions extends RigidBodyOptions {

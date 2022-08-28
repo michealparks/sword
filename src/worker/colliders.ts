@@ -11,7 +11,6 @@ export const createCollider = (options: RigidBodyWorkerOptions) => {
   case ColliderType.Cone:
     return ColliderDesc.cone(options.collider2, options.collider1)
   case ColliderType.ConvexHull:
-    console.log(options.vertices)
     return ColliderDesc.convexHull(options.vertices)
   case ColliderType.Cuboid:
     return ColliderDesc.cuboid(options.collider1, options.collider2, options.collider3)

@@ -14,10 +14,16 @@ export * from './types'
 export { count } from './lib'
 export { dynamicCount } from './lib/dynamic'
 export { ColliderType } from './constants/collider'
-export { RigidBodyType } from '@dimforge/rapier3d-compat'
+export {
+  ActiveCollisionTypes, ActiveEvents, RigidBodyType
+} from '@dimforge/rapier3d-compat'
 
-const eventmap = new Map<string, Set<any>>()
-eventmap.set('debugDraw', new Set())
+type Listener = (...args: any) => void
+type Events = 'collisionStart' | 'collisionEnd'
+
+const eventmap = new Map<Events, Map<number, Listener[]>>()
+eventmap.set('collisionStart', new Map())
+eventmap.set('collisionEnd', new Map())
 
 let currentFps = 0
 let isRunning = false
@@ -28,13 +34,40 @@ let isRunning = false
  * @param name The event name.
  * @param callback A callback that fires when the event is triggered.
  */
-export const on = (name: 'collisions', callback: (...args: any) => void) => {
-  eventmap.get(name)!.add(callback)
+export const on = (name: Events, id: number, callback: Listener) => {
+  const type = eventmap.get(name)!
+
+  if (!type.has(id)) {
+    type.set(id, [])
+  }
+
+  type.get(id)!.push(callback)
 }
 
-const emit = (name: string, data: any) => {
-  for (const callback of eventmap.get(name)!) {
-    callback(data)
+const emit = (name: Events, id: number, data: any) => {
+  const type = eventmap.get(name)!
+  const callbacks = type.get(id)
+
+  if (callbacks === undefined) {
+    return
+  }
+
+  for (let i = 0, l = callbacks.length; i < l; i += 1) {
+    callbacks[i](data)
+  }
+}
+
+const emitCollisionEvents = (collisions: Float32Array) => {
+  for (let i = 0, l = collisions.length; i < l; i += 3) {
+    const id1 = collisions[i + 0]
+    const id2 = collisions[i + 1]
+    const start = collisions[i + 2] === 1
+
+    if (start) {
+      emit('collisionStart', id1, id2)
+    } else {
+      emit('collisionEnd', id1, id2)
+    }
   }
 }
 
@@ -131,7 +164,8 @@ worker.addEventListener('message', (message) => {
   case events.RUN:
     return execPromise(data)
   case events.TRANSFORMS:
-    return updateDynamicBodies(new Float32Array(data.buffer))
+    emitCollisionEvents(new Float32Array(data.collisions))
+    return updateDynamicBodies(new Float32Array(data.transforms))
   default:
     throw new Error(`Unhandled event ${data.event}`)
   }

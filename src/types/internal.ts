@@ -12,32 +12,31 @@ export interface Transform {
   z: number
 }
 
-export interface PrimitiveRigidBodyWorkerOptions {
+interface WorkerOptions {
   canSleep: boolean
   ccd: boolean
-  collider: ColliderTypes
+  events: number
+  instances: Transform[]
+  sensor: boolean
+  type: RigidBodyTypes
+}
+
+export interface PrimitiveRigidBodyWorkerOptions extends WorkerOptions {
+  collider: Omit<ColliderTypes, ColliderType.Trimesh | ColliderType.ConvexHull>
   // This is radius | hx
   collider1: number
   // This is halfHeight | hy
   collider2: number
   // This is hz
   collider3: number
-  instances: Transform[]
-  sensor: boolean
-  type: RigidBodyTypes
 }
 
-export interface TriMeshRigidBodyWorkerOptions {
-  canSleep: boolean
-  ccd: boolean
-  collider: ColliderType.Trimesh
+export interface VertexRigidBodyWorkerOptions extends WorkerOptions {
+  collider: ColliderType.Trimesh | ColliderType.ConvexHull
   indices?: Uint32Array
-  instances?: Transform[]
-  sensor: boolean
-  type: RigidBodyTypes
   vertices: Float32Array
 }
 
 export type RigidBodyWorkerOptions =
   | PrimitiveRigidBodyWorkerOptions
-  | TriMeshRigidBodyWorkerOptions
+  | VertexRigidBodyWorkerOptions

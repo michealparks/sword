@@ -1,11 +1,9 @@
 import * as THREE from 'three'
 import { registerDynamicBody, registerInstancedDynamicBody } from './dynamic'
-import { ColliderType } from '../constants/collider'
 import type { RigidBodiesTypeOptions } from '../types/rigidbody'
 import { RigidBodyType } from '@dimforge/rapier3d-compat'
 import type { RigidBodyWorkerOptions } from '../types/internal'
 import { createBodyId } from '.'
-
 
 export const newBodies: RigidBodyWorkerOptions[] = []
 export const sensorEvents = new Map<number, { enter: Event, leave: Event }>()
@@ -33,7 +31,7 @@ export const createRigidBody = (
     collider1: options.hx ?? options.radius,
     collider2: options.hy ?? options.halfHeight,
     collider3: options.hz,
-    vertices: options.vertices,
+    events: options.events ?? -1,
     instances: [{
       id,
       qw: quaternion.w,
@@ -46,6 +44,7 @@ export const createRigidBody = (
     }],
     sensor: options.sensor ?? false,
     type: options.type,
+    vertices: options.vertices,
   })
 
   if (options.type === RigidBodyType.Dynamic) {
@@ -82,33 +81,20 @@ export const createRigidBodies = (
     newBodies.push()
   }
 
-  if (
-    options.collider === ColliderType.Trimesh ||
-    options.collider === ColliderType.ConvexHull
-  ) {
-    newBodies.push({
-      canSleep: options.canSleep ?? true,
-      ccd: options.ccd ?? false,
-      collider: options.collider,
-      indices: options.indices,
-      instances,
-      sensor: options.sensor ?? false,
-      type: options.type,
-      vertices: options.vertices,
-    })
-  } else {
-    newBodies.push({
-      canSleep: options.canSleep ?? true,
-      ccd: options.ccd ?? false,
-      collider: options.collider,
-      collider1: options.hx ?? options.radius,
-      collider2: options.hy ?? options.halfHeight,
-      collider3: options.hz,
-      instances,
-      sensor: options.sensor ?? false,
-      type: options.type,
-    })
-  }
+  newBodies.push({
+    canSleep: options.canSleep ?? true,
+    ccd: options.ccd ?? false,
+    collider: options.collider,
+    collider1: options.hx ?? options.radius,
+    collider2: options.hy ?? options.halfHeight,
+    collider3: options.hz,
+    events: options.events ?? -1,
+    indices: options.indices,
+    instances,
+    sensor: options.sensor ?? false,
+    type: options.type,
+    vertices: options.vertices,
+  })
 
   if (options.type === RigidBodyType.Dynamic) {
     registerInstancedDynamicBody(mesh, ids)

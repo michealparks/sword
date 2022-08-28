@@ -2,13 +2,20 @@ import type { RigidBodyWorkerOptions, Transform } from '../types/internal'
 import {
   applyImpulses, applyLinearAndTorqueImpulses, applyTorqueImpulses
 } from './appliers'
-import { bodies, bodymap } from './bodies'
-import { setNextKinematicTransforms, setTransforms, setTranslation } from './setters'
+import { bodies, bodymap, collidermap, handleMap } from './bodies'
+import {
+  setActiveCollisionTypes,
+  setNextKinematicTransforms,
+  setTransforms,
+  setTranslation,
+  setTranslations
+} from './setters'
 import RAPIER from '@dimforge/rapier3d-compat'
 import { createCollider } from './colliders'
 import { events } from '../constants/events'
 
 let world: RAPIER.World
+let eventQueue: RAPIER.EventQueue
 let now = 0
 let then = 0
 let dt = 0
@@ -28,6 +35,8 @@ const init = async (pid: number, x?: number, y?: number, z?: number) => {
   })
   world.timestep = timestep / 1000
 
+  eventQueue = new RAPIER.EventQueue(true)
+
   self.postMessage({
     event: events.INIT,
     pid,
@@ -35,7 +44,7 @@ const init = async (pid: number, x?: number, y?: number, z?: number) => {
 }
 
 const tick = () => {
-  world.step()
+  world.step(eventQueue)
 
   now = performance.now()
   dt = (now - then) / 1000
@@ -66,10 +75,20 @@ const tick = () => {
 
   transforms[cursor] = -1
 
+  const registered: number[] = []
+  eventQueue.drainCollisionEvents((handle1, handle2, started) => {
+    const id1 = handleMap.get(handle1)!
+    const id2 = handleMap.get(handle2)!
+    registered.push(id1, id2, started ? 1 : 0)
+  })
+
+  const collisions = new Float32Array(registered)
+
   self.postMessage({
-    buffer: transforms.buffer,
+    collisions: collisions.buffer,
     event: events.TRANSFORMS,
-  }, [transforms.buffer])
+    transforms: transforms.buffer,
+  }, [transforms.buffer, collisions.buffer])
 }
 
 const debugTick = () => {
@@ -130,6 +149,10 @@ const createRigidBody = (
     .setMass(1)
     .setSensor(options.sensor)
 
+  if (options.events > -1) {
+    colliderDescription.setActiveEvents(options.events)
+  }
+
   const rigidBody = world.createRigidBody(bodyDescription)
   const collider = world.createCollider(colliderDescription, rigidBody)
 
@@ -139,6 +162,8 @@ const createRigidBody = (
 
   rigidBody.userData = transform.id
   bodymap.set(transform.id, rigidBody)
+  collidermap.set(transform.id, collider)
+  handleMap.set(rigidBody.handle, transform.id)
 }
 
 const createRigidBodies = (bodyOptions: RigidBodyWorkerOptions[]) => {
@@ -174,14 +199,26 @@ self.addEventListener('message', (message) => {
     return applyTorqueImpulses(new Float32Array(data.buffer))
   case events.APPLY_LINEAR_AND_TORQUE_IMPULSES:
     return applyLinearAndTorqueImpulses(new Float32Array(data.buffer))
+  case events.SET_ACTIVE_COLLISION_TYPES:
+    return setActiveCollisionTypes(data.id, data.types)
   case events.SET_GRAVITY:
     return setGravity(data.x, data.y, data.z)
   case events.SET_NEXT_KINEMATIC_TRANSFORMS:
     return setNextKinematicTransforms(new Float32Array(data.buffer))
   case events.SET_TRANSLATION:
-    return setTranslation(data)
+    return setTranslation(data.id, data, data.resetAngvel, data.resetLinvel)
+  case events.SET_TRANSLATIONS:
+    return setTranslations(
+      new Float32Array(data.buffer),
+      data.resetAngvel,
+      data.resetLinvel
+    )
   case events.SET_TRANSFORMS:
-    return setTransforms(new Float32Array(data.buffer))
+    return setTransforms(
+      new Float32Array(data.buffer),
+      data.resetAngvel,
+      data.resetLinvel
+    )
   default:
     throw new Error(`Unexpected event ${data.event}!`)
   }
