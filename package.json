@@ -1,6 +1,5 @@
 {
-  "name": "three-kit",
-  "private": true,
+  "name": "sword",
   "version": "0.0.1",
   "type": "module",
   "types": "./src/main.ts",
@@ -29,11 +28,11 @@
     "nice-color-palettes": "^2.0.0",
     "terser": "^5.15.0",
     "typescript": "^4.8.2",
-    "vite": "^3.0.9"
+    "vite": "^3.0.9",
+    "vite-plugin-wasm": "^2.1.0"
   },
   "dependencies": {
     "@dimforge/rapier3d-compat": "^0.9.0",
-    "three-kit": "github:michealparks/three-kit",
-    "vite-plugin-wasm": "^2.1.0"
+    "three-kit": "github:michealparks/three-kit"
   }
 }
