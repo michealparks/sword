@@ -1,15 +1,15 @@
 import * as THREE from 'three'
 
-const bodymap: Record<number, { instance: number; mesh: THREE.Mesh }> = {}
-const bodies: THREE.Mesh[] = []
+const bodymap: Record<number, { instance: number; object: THREE.Object3D }> = {}
+const bodies: THREE.Object3D[] = []
 const m4 = new THREE.Matrix4()
 const quat = new THREE.Quaternion()
 
-export const registerDynamicBody = (mesh: THREE.Mesh, id: number) => {
-  bodies.push(mesh)
+export const registerDynamicBody = (object: THREE.Object3D, id: number) => {
+  bodies.push(object)
   bodymap[id] = {
     instance: -1,
-    mesh,
+    object,
   }
 }
 
@@ -21,7 +21,7 @@ export const registerInstancedDynamicBody = (
   for (let i = 0, l = ids.length; i < l; i += 1) {
     bodymap[ids[i]] = {
       instance: i,
-      mesh,
+      object: mesh,
     }
   }
 }
@@ -32,21 +32,21 @@ export const updateDynamicBodies = (transforms: Float32Array) => {
       break
     }
 
-    const { instance, mesh } = bodymap[transforms[i]]
+    const { instance, object } = bodymap[transforms[i]]
 
     if (instance === -1) {
-      mesh.position.set(
+      object.position.set(
         transforms[i + 1],
         transforms[i + 2],
         transforms[i + 3]
       )
-      mesh.quaternion.set(
+      object.quaternion.set(
         transforms[i + 4],
         transforms[i + 5],
         transforms[i + 6],
         transforms[i + 7]
       )
-    } else if (mesh instanceof THREE.InstancedMesh) {
+    } else if (object instanceof THREE.InstancedMesh) {
       quat.set(
         transforms[i + 4],
         transforms[i + 5],
@@ -59,8 +59,8 @@ export const updateDynamicBodies = (transforms: Float32Array) => {
         transforms[i + 2],
         transforms[i + 3]
       )
-      mesh.setMatrixAt(instance, m4)
-      mesh.instanceMatrix.needsUpdate = true
+      object.setMatrixAt(instance, m4)
+      object.instanceMatrix.needsUpdate = true
     }
   }
 }

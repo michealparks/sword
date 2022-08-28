@@ -16,6 +16,17 @@ export const createCollider = (options: RigidBodyWorkerOptions) => {
     return ColliderDesc.cuboid(options.collider1, options.collider2, options.collider3)
   case ColliderType.Cylinder:
     return ColliderDesc.cylinder(options.collider2, options.collider1)
+  case ColliderType.Heightfield:
+    return ColliderDesc.heightfield(
+      options.collider1,
+      options.collider2,
+      options.vertices,
+      {
+        x: 1,
+        y: 1,
+        z: 1,
+      }
+    )
   case ColliderType.Trimesh:
     return ColliderDesc.trimesh(options.vertices, options.indices ?? new Uint32Array(0))
   }

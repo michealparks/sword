@@ -1,0 +1,1 @@
+A vanilla THREE.js integration with Rapier.js, running in a web worker.

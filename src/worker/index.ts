@@ -92,6 +92,10 @@ const tick = () => {
 }
 
 const debugTick = () => {
+  if (world === undefined) {
+    return
+  }
+
   const buffers = world.debugRender()
 
   self.postMessage({
@@ -101,14 +105,10 @@ const debugTick = () => {
   }, [buffers.vertices.buffer, buffers.colors.buffer])
 }
 
-const run = (pid: number, debug = true) => {
+const run = (pid: number) => {
   now = performance.now()
   then = now
   tickId = self.setInterval(tick, timestep)
-
-  if (debug) {
-    debugTickId = self.setInterval(debugTick, timestep * 3)
-  }
 
   postMessage({
     event: events.RUN,
@@ -116,9 +116,17 @@ const run = (pid: number, debug = true) => {
   })
 }
 
+const setDebugDraw = (on: boolean, slowdown = 3) => {
+  if (on) {
+    debugTickId = self.setInterval(debugTick, timestep * slowdown)
+  } else {
+    clearInterval(debugTickId)
+  }
+}
+
 const pause = (pid: number) => {
   clearInterval(tickId)
-  clearInterval(debugTickId)
+
   postMessage({
     event: events.PAUSE,
     pid,
@@ -191,6 +199,8 @@ self.addEventListener('message', (message) => {
     return run(data.pid)
   case events.PAUSE:
     return pause(data.pid)
+  case events.SET_DEBUG_DRAW:
+    return setDebugDraw(data.on, data.slowdown)
   case events.CREATE_RIGIDBODIES:
     return createRigidBodies(data.bodies)
   case events.APPLY_IMPULSES:

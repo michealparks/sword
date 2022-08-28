@@ -18,10 +18,10 @@ const quat = new THREE.Quaternion()
  * @returns a list of ids
  */
 export const createRigidBody = (
-  mesh: THREE.Mesh,
+  object: THREE.Object3D,
   options: RigidBodiesTypeOptions
 ) => {
-  const { position, quaternion } = mesh
+  const { position, quaternion } = object
   const id = createBodyId()
 
   newBodies.push({
@@ -48,7 +48,7 @@ export const createRigidBody = (
   })
 
   if (options.type === RigidBodyType.Dynamic) {
-    registerDynamicBody(mesh, id)
+    registerDynamicBody(object, id)
   }
 
   return id
