@@ -1,17 +1,24 @@
+import { ColliderDesc } from '@dimforge/rapier3d-compat'
 import { ColliderType } from '../constants/collider'
-import RAPIER from '@dimforge/rapier3d-compat'
 import type { RigidBodyWorkerOptions } from '../types/internal'
 
-export const createCollider = (body: RigidBodyWorkerOptions) => {
-  switch (body.collider) {
+export const createCollider = (options: RigidBodyWorkerOptions) => {
+  switch (options.collider) {
   case ColliderType.Ball:
-    return RAPIER.ColliderDesc.ball(body.collider1)
+    return ColliderDesc.ball(options.collider1)
   case ColliderType.Capsule:
-    return RAPIER.ColliderDesc.capsule(body.collider2, body.collider1)
+    return ColliderDesc.capsule(options.collider2, options.collider1)
+  case ColliderType.Cone:
+    return ColliderDesc.cone(options.collider2, options.collider1)
+  case ColliderType.ConvexHull:
+    console.log(options.vertices)
+    return ColliderDesc.convexHull(options.vertices)
   case ColliderType.Cuboid:
-    return RAPIER.ColliderDesc.cuboid(body.collider1, body.collider2, body.collider3)
+    return ColliderDesc.cuboid(options.collider1, options.collider2, options.collider3)
+  case ColliderType.Cylinder:
+    return ColliderDesc.cylinder(options.collider2, options.collider1)
   case ColliderType.Trimesh:
-    return RAPIER.ColliderDesc.trimesh(body.vertices, body.indices)
+    return ColliderDesc.trimesh(options.vertices, options.indices ?? new Uint32Array(0))
   }
 
   throw new Error('bodytype not supported')

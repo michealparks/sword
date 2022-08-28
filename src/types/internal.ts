@@ -32,7 +32,7 @@ export interface TriMeshRigidBodyWorkerOptions {
   ccd: boolean
   collider: ColliderType.Trimesh
   indices?: Uint32Array
-  instances: Transform[]
+  instances?: Transform[]
   sensor: boolean
   type: RigidBodyTypes
   vertices: Float32Array

@@ -10,9 +10,9 @@ const matrix = new THREE.Matrix4()
 m4.copy(mesh.matrixWorld).invert()
 
 const color = new THREE.Color()
-
 const size = 20
 const half = size / 2
+
 for (let index = 0; index < constants.NUM_MESHES; index += 1) {
   color.set(randomColor())
   mesh.setColorAt(index, color)

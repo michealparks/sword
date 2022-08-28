@@ -33,6 +33,7 @@ export const createRigidBody = (
     collider1: options.hx ?? options.radius,
     collider2: options.hy ?? options.halfHeight,
     collider3: options.hz,
+    vertices: options.vertices,
     instances: [{
       id,
       qw: quaternion.w,
@@ -81,12 +82,15 @@ export const createRigidBodies = (
     newBodies.push()
   }
 
-  if (options.collider === ColliderType.Trimesh) {
+  if (
+    options.collider === ColliderType.Trimesh ||
+    options.collider === ColliderType.ConvexHull
+  ) {
     newBodies.push({
       canSleep: options.canSleep ?? true,
       ccd: options.ccd ?? false,
       collider: options.collider,
-      indices: options.indices ?? new Uint32Array(0),
+      indices: options.indices,
       instances,
       sensor: options.sensor ?? false,
       type: options.type,

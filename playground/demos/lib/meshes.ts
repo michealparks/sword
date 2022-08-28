@@ -15,21 +15,23 @@ const params = {
   geometry: localStorage.getItem('sword.demo.mesh.geometry') ?? 'box',
 }
 
+const meshTypes = [
+  'box',
+  'cone',
+  'icosahedron',
+  'octahedron',
+  'plane',
+  'tetrahedron',
+  'torus',
+  'torusKnot',
+  'tube',
+  'ship',
+  'asteroid',
+]
+
 const pane = debug.addPane('game')
 pane.addInput(params, 'geometry', {
-  options: Object.fromEntries([
-    'box',
-    'cone',
-    'icosahedron',
-    'octahedron',
-    'plane',
-    'tetrahedron',
-    'torus',
-    'torusKnot',
-    'tube',
-    'ship',
-    'asteroid',
-  ].map(entry => ([entry, entry])))
+  options: Object.fromEntries(meshTypes.map(entry => ([entry, entry])))
 }).on('change', () => {
   localStorage.setItem('sword.demo.mesh.geometry', params.geometry)
   window.location.reload()
@@ -39,6 +41,8 @@ const radius = 0.5
 const path = new CustomSinCurve(1)
 
 export let mesh: THREE.InstancedMesh
+export let vertices
+export let indices
 
 let geometry: THREE.BufferGeometry
 
@@ -46,10 +50,14 @@ if (params.geometry === 'asteroid') {
   const template = asteroid.scene.getObjectByName('Asteroid') as THREE.Mesh
   geometry = template.geometry
   mesh = new THREE.InstancedMesh(template.geometry, template.material, NUM_MESHES)
+  vertices = new Float32Array(geometry.attributes.position.array)
+  indices = mesh.geometry.index ? new Uint32Array(mesh.geometry.index.array) : undefined
 } else if (params.geometry === 'ship') {
   const template = ship.scene.getObjectByName('Collider') as THREE.Mesh
   geometry = template.geometry
   mesh = new THREE.InstancedMesh(template.geometry, template.material, NUM_MESHES)
+  vertices = new Float32Array(geometry.attributes.position.array)
+  indices = mesh.geometry.index ? new Uint32Array(mesh.geometry.index.array) : undefined
 } else {
   geometry = {
     box: new THREE.BoxGeometry(radius, radius, radius),
@@ -67,11 +75,10 @@ if (params.geometry === 'asteroid') {
   material.side = THREE.DoubleSide
   material.flatShading = true
   mesh = new THREE.InstancedMesh(geometry, material, NUM_MESHES)
+  vertices = new Float32Array(geometry.attributes.position.array)
+  indices = mesh.geometry.index ? new Uint32Array(mesh.geometry.index.array) : undefined
 }
 
 mesh.castShadow = true
 mesh.receiveShadow = true
 scene.add(mesh)
-
-export const vertices = new Float32Array(geometry.attributes.position.array)
-export const indices = mesh.geometry.index ? new Uint32Array(mesh.geometry.index.array) : undefined

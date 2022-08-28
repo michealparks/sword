@@ -4,7 +4,10 @@ import type { RigidBodyType } from '@dimforge/rapier3d-compat'
 export type ColliderTypes =
   | ColliderType.Ball
   | ColliderType.Capsule
+  | ColliderType.Cone
+  | ColliderType.ConvexHull
   | ColliderType.Cuboid
+  | ColliderType.Cylinder
   | ColliderType.Heightfield
   | ColliderType.Trimesh
 
@@ -32,11 +35,28 @@ export interface CapsuleRigidBodyOptions extends RigidBodyOptions {
   radius: number
 }
 
+export interface ConeRigidBodyOptions extends RigidBodyOptions {
+  collider: ColliderType.Cone
+  halfHeight: number
+  radius: number
+}
+
+export interface ConvexHullRigidBodyOptions extends RigidBodyOptions {
+  collider: ColliderType.ConvexHull
+  vertices: Float32Array
+}
+
 export interface CuboidRigidBodyOptions extends RigidBodyOptions {
   collider: ColliderType.Cuboid
   hx: number
   hy: number
   hz: number
+}
+
+export interface CylinderRigidBodyOptions extends RigidBodyOptions {
+  collider: ColliderType.Cylinder
+  halfHeight: number
+  radius: number
 }
 
 export interface TrimeshRigidBodyOptions extends RigidBodyOptions {
@@ -48,6 +68,9 @@ export interface TrimeshRigidBodyOptions extends RigidBodyOptions {
 export type RigidBodiesTypeOptions =
   | BallRigidBodyOptions
   | CapsuleRigidBodyOptions
+  | ConeRigidBodyOptions
+  | ConvexHullRigidBodyOptions
   | CuboidRigidBodyOptions
+  | CylinderRigidBodyOptions
   | TrimeshRigidBodyOptions
 
