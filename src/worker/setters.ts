@@ -90,6 +90,24 @@ export const setTranslation = (
   }
 }
 
+export const setVelocities = (velocities: Float32Array) => {
+  for (let i = 0, l = velocities.length; i < l; i += 7) {
+    const body = bodymap.get(velocities[i + 0])!
+
+    body.setLinvel({
+      x: velocities[i + 1],
+      y: velocities[i + 2],
+      z: velocities[i + 3],
+    }, false)
+
+    body.setAngvel({
+      x: velocities[i + 4],
+      y: velocities[i + 5],
+      z: velocities[i + 6],
+    }, true)
+  }
+}
+
 export const setTranslations = (
   translations: Float32Array,
   resetAngvel: boolean,

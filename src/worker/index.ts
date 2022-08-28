@@ -8,7 +8,8 @@ import {
   setNextKinematicTransforms,
   setTransforms,
   setTranslation,
-  setTranslations
+  setTranslations,
+  setVelocities
 } from './setters'
 import RAPIER from '@dimforge/rapier3d-compat'
 import { createCollider } from './colliders'
@@ -229,6 +230,8 @@ self.addEventListener('message', (message) => {
       data.resetAngvel,
       data.resetLinvel
     )
+  case events.SET_VELOCITIES:
+    return setVelocities(new Float32Array(data.buffer))
   default:
     throw new Error(`Unexpected event ${data.event}!`)
   }

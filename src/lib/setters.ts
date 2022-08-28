@@ -67,3 +67,10 @@ export const setTransforms = (
     resetLinvel,
   }, [transforms.buffer])
 }
+
+export const setVelocities = (velocities: Float32Array) => {
+  worker.postMessage({
+    buffer: velocities.buffer,
+    event: events.SET_VELOCITIES,
+  }, [velocities.buffer])
+}
