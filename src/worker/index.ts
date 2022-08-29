@@ -7,7 +7,7 @@ import {
   setActiveCollisionTypes,
   setNextKinematicTransforms,
   setTransforms,
-  setTranslation,
+  setTransformsAndVelocities,
   setTranslations,
   setVelocities
 } from './setters'
@@ -165,6 +165,9 @@ const createRigidBody = (
   const rigidBody = world.createRigidBody(bodyDescription)
   const collider = world.createCollider(colliderDescription, rigidBody)
 
+  // @TODO ???
+  collider.setActiveEvents(RAPIER.ActiveEvents.COLLISION_EVENTS)
+
   if (options.type === RAPIER.RigidBodyType.Dynamic) {
     bodies.add(rigidBody)
   }
@@ -216,8 +219,6 @@ self.addEventListener('message', (message) => {
     return setGravity(data.x, data.y, data.z)
   case events.SET_NEXT_KINEMATIC_TRANSFORMS:
     return setNextKinematicTransforms(new Float32Array(data.buffer))
-  case events.SET_TRANSLATION:
-    return setTranslation(data.id, data, data.resetAngvel, data.resetLinvel)
   case events.SET_TRANSLATIONS:
     return setTranslations(
       new Float32Array(data.buffer),
@@ -225,11 +226,9 @@ self.addEventListener('message', (message) => {
       data.resetLinvel
     )
   case events.SET_TRANSFORMS:
-    return setTransforms(
-      new Float32Array(data.buffer),
-      data.resetAngvel,
-      data.resetLinvel
-    )
+    return setTransforms(new Float32Array(data.buffer))
+  case events.SET_TRANSFORMS_AND_VELOCITIES:
+    return setTransformsAndVelocities(new Float32Array(data.buffer))
   case events.SET_VELOCITIES:
     return setVelocities(new Float32Array(data.buffer))
   default:

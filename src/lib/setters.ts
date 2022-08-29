@@ -32,16 +32,6 @@ export const setNextKinematicTransforms = (transforms: Float32Array) => {
   }, [transforms.buffer])
 }
 
-export const setTranslation = (id: number, x: number, y: number, z: number) => {
-  worker.postMessage({
-    event: events.SET_TRANSLATION,
-    id,
-    x,
-    y,
-    z,
-  })
-}
-
 export const setTranslations = (
   translations: Float32Array,
   resetAngvel: boolean,
@@ -55,17 +45,18 @@ export const setTranslations = (
   }, [translations.buffer])
 }
 
-export const setTransforms = (
-  transforms: Float32Array,
-  resetAngvel: boolean,
-  resetLinvel: boolean
-) => {
+export const setTransforms = (transforms: Float32Array) => {
   worker.postMessage({
     buffer: transforms.buffer,
     event: events.SET_TRANSFORMS,
-    resetAngvel,
-    resetLinvel,
   }, [transforms.buffer])
+}
+
+export const setTransformsAndVelocities = (array: Float32Array) => {
+  worker.postMessage({
+    buffer: array.buffer,
+    event: events.SET_TRANSFORMS_AND_VELOCITIES,
+  })
 }
 
 export const setVelocities = (velocities: Float32Array) => {

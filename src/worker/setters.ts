@@ -21,6 +21,10 @@ export const setActiveCollisionTypes = (id: number, types: number) => {
   collidermap.get(id)!.setActiveCollisionTypes(types)
 }
 
+export const setCollisionGroups = (id: number, group: number) => {
+  collidermap.get(id)!.setCollisionGroups(group)
+}
+
 export const setNextKinematicTransforms = (transforms: Float32Array) => {
   for (let i = 0, l = transforms.length; i < l; i += 8) {
     const body = bodymap.get(transforms[i + 0])!
@@ -40,11 +44,7 @@ export const setNextKinematicTransforms = (transforms: Float32Array) => {
   }
 }
 
-export const setTransforms = (
-  transforms: Float32Array,
-  resetAngvel: boolean,
-  resetLinvel: boolean
-) => {
+export const setTransforms = (transforms: Float32Array) => {
   for (let i = 0, l = transforms.length; i < l; i += 8) {
     const body = bodymap.get(transforms[i + 0])!
 
@@ -60,33 +60,6 @@ export const setTransforms = (
       y: transforms[i + 5],
       z: transforms[i + 6],
     }, true)
-
-    if (resetAngvel) {
-      resetAngularVelocity(body)
-    }
-
-    if (resetLinvel) {
-      resetLinearVelocity(body)
-    }
-  }
-}
-
-export const setTranslation = (
-  id: number,
-  data: RAPIER.Vector,
-  resetAngvel: boolean,
-  resetLinvel: boolean
-) => {
-  const body = bodymap.get(id)!
-
-  body.setTranslation(data, true)
-
-  if (resetAngvel) {
-    resetAngularVelocity(body)
-  }
-
-  if (resetLinvel) {
-    resetLinearVelocity(body)
   }
 }
 
@@ -104,6 +77,37 @@ export const setVelocities = (velocities: Float32Array) => {
       x: velocities[i + 4],
       y: velocities[i + 5],
       z: velocities[i + 6],
+    }, true)
+  }
+}
+
+export const setTransformsAndVelocities = (array: Float32Array) => {
+  for (let i = 0, l = array.length; i < l; i += 14) {
+    const body = bodymap.get(array[i + 0])!
+
+    body.setTranslation({
+      x: array[i + 1],
+      y: array[i + 2],
+      z: array[i + 3],
+    }, false)
+
+    body.setRotation({
+      w: array[i + 7],
+      x: array[i + 4],
+      y: array[i + 5],
+      z: array[i + 6],
+    }, false)
+
+    body.setLinvel({
+      x: array[i + 8],
+      y: array[i + 9],
+      z: array[i + 10],
+    }, false)
+
+    body.setAngvel({
+      x: array[i + 11],
+      y: array[i + 12],
+      z: array[i + 13],
     }, true)
   }
 }
