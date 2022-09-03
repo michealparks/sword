@@ -17,7 +17,6 @@ interface WorkerOptions {
   ccd: boolean
   events: number
   instances: Transform[]
-  sensor: boolean
   type: RigidBodyTypes
 }
 

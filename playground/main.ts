@@ -40,9 +40,8 @@ directionalLight.shadow.camera.far = 20
   const object = new THREE.Object3D()
 
   const id = sword.createRigidBody(object, {
-    sensor: true,
     collider: sword.ColliderType.Ball,
-    type: sword.RigidBodyType.Fixed,
+    type: sword.RigidBodyType.Sensor,
     events: sword.ActiveEvents.COLLISION_EVENTS,
     radius,
   })
@@ -73,30 +72,23 @@ directionalLight.shadow.camera.far = 20
   })
 }
 
-// {
-//   // Create sensor
-//   const size = 100
-//   const sizeY = 5
-//   const geometry = new THREE.BoxGeometry(size, sizeY, size)
-//   const material = new THREE.MeshStandardMaterial()
-//   material.transparent = true
-//   material.opacity = 0.1
-//   const mesh = new THREE.Mesh(geometry, material)
-//   mesh.position.set(0, -sizeY - 20, 0)
-//   scene.add(mesh)
-//   const enter = () => {}
-//   const leave = () => {}
+{
+  const size = 30
+  const sizeY = 0.5
+  const geometry = new THREE.BoxGeometry(size, sizeY, size)
+  const material = new THREE.MeshStandardMaterial()
+  const mesh = new THREE.Mesh(geometry, material)
+  mesh.position.set(0, -sizeY - 5, 0)
+  scene.add(mesh)
 
-//   const id = sword.createRigidBody(mesh, {
-//     sensor: true,
-//     collider: sword.ColliderType.Cuboid,
-//     type: sword.RigidBodyType.Fixed,
-//     // events: sword.ActiveEvents.COLLISION_EVENTS,
-//     hx: size / 2,
-//     hy: sizeY / 2,
-//     hz: size / 2,
-//   })
-// }
+  const id = sword.createRigidBody(mesh, {
+    collider: sword.ColliderType.Cuboid,
+    type: sword.RigidBodyType.Fixed,
+    hx: size / 2,
+    hy: sizeY / 2,
+    hz: size / 2,
+  })
+}
 
 // Create demo
 const savedDemo = window.localStorage.getItem('demo') || 'boxes'

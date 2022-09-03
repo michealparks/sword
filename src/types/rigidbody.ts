@@ -1,5 +1,5 @@
 import type { ColliderType } from '../constants/collider'
-import type { RigidBodyType } from '@dimforge/rapier3d-compat'
+import type { RigidBodyType } from '../constants/rigidbody'
 
 export type ColliderTypes =
   | ColliderType.Ball
@@ -16,12 +16,12 @@ export type RigidBodyTypes =
   | RigidBodyType.Fixed
   | RigidBodyType.KinematicPositionBased
   | RigidBodyType.KinematicVelocityBased
+  | RigidBodyType.Sensor
 
 export interface RigidBodyOptions {
   canSleep?: boolean
   ccd?: boolean
   type: RigidBodyTypes
-  sensor?: boolean
   events?: number
 }
 
@@ -74,4 +74,3 @@ export type RigidBodiesTypeOptions =
   | CuboidRigidBodyOptions
   | CylinderRigidBodyOptions
   | TrimeshRigidBodyOptions
-

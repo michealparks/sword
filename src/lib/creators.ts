@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { registerDynamicBody, registerInstancedDynamicBody } from './dynamic'
 import type { RigidBodiesTypeOptions } from '../types/rigidbody'
-import { RigidBodyType } from '@dimforge/rapier3d-compat'
+import { RigidBodyType } from '../constants/rigidbody'
 import type { RigidBodyWorkerOptions } from '../types/internal'
 import { createBodyId } from '.'
 
@@ -42,7 +42,6 @@ export const createRigidBody = (
       y: position.y,
       z: position.z,
     }],
-    sensor: options.sensor ?? false,
     type: options.type,
     vertices: options.vertices,
   })
@@ -91,7 +90,6 @@ export const createRigidBodies = (
     events: options.events ?? -1,
     indices: options.indices,
     instances,
-    sensor: options.sensor ?? false,
     type: options.type,
     vertices: options.vertices,
   })

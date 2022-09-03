@@ -1,6 +1,9 @@
 import { events } from '../constants/events'
 import { worker } from './worker'
 
+/**
+ * @param impulses an array of impulses
+ */
 export const applyImpulses = (impulses: Float32Array) => {
   worker.postMessage({
     buffer: impulses.buffer,

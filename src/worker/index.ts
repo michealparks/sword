@@ -12,6 +12,7 @@ import {
   setVelocities
 } from './setters'
 import RAPIER from '@dimforge/rapier3d-compat'
+import { RigidBodyType } from '../constants/rigidbody'
 import { createCollider } from './colliders'
 import { events } from '../constants/events'
 
@@ -81,6 +82,16 @@ const tick = () => {
     const id1 = handleMap.get(handle1)!
     const id2 = handleMap.get(handle2)!
     registered.push(id1, id2, started ? 1 : 0)
+
+    const collider1 = collidermap.get(id1)!
+    const collider2 = collidermap.get(id2)!
+
+    if (started) {
+      // world.contactPair(collider1, collider2, (manifold, flipped) => {
+      //   console.log(manifold.localContactPoint1(), flipped)
+      // })
+    }
+    
   })
 
   const collisions = new Float32Array(registered)
@@ -134,11 +145,25 @@ const pause = (pid: number) => {
   })
 }
 
+const mapType = (type: RigidBodyType) => {
+  switch (type) {
+  case RigidBodyType.Dynamic:
+    return RAPIER.RigidBodyType.Dynamic
+  case RigidBodyType.KinematicPositionBased:
+    return RAPIER.RigidBodyType.KinematicPositionBased
+  case RigidBodyType.KinematicVelocityBased:
+    return RAPIER.RigidBodyType.KinematicVelocityBased
+  case RigidBodyType.Fixed:
+  case RigidBodyType.Sensor:
+    return RAPIER.RigidBodyType.Fixed
+  }
+}
+
 const createRigidBody = (
   transform: Transform,
   options: RigidBodyWorkerOptions
 ) => {
-  const bodyDescription = new RAPIER.RigidBodyDesc(options.type)
+  const bodyDescription = new RAPIER.RigidBodyDesc(mapType(options.type))
     .setTranslation(transform.x, transform.y, transform.z)
     .setRotation({
       w: transform.qw,
@@ -156,7 +181,7 @@ const createRigidBody = (
     .setRestitution(0.5)
     .setRestitutionCombineRule(RAPIER.CoefficientCombineRule.Max)
     .setMass(1)
-    .setSensor(options.sensor)
+    .setSensor(options.type === RigidBodyType.Sensor)
 
   if (options.events > -1) {
     colliderDescription.setActiveEvents(options.events)
@@ -168,7 +193,7 @@ const createRigidBody = (
   // @TODO ???
   collider.setActiveEvents(RAPIER.ActiveEvents.COLLISION_EVENTS)
 
-  if (options.type === RAPIER.RigidBodyType.Dynamic) {
+  if (options.type === RigidBodyType.Dynamic) {
     bodies.add(rigidBody)
   }
 
@@ -185,6 +210,19 @@ const createRigidBodies = (bodyOptions: RigidBodyWorkerOptions[]) => {
       createRigidBody(options.instances[j], options)
     }
   }
+}
+
+const destroyAllRigidBodies = (pid: number) => {
+  bodies.clear()
+  bodymap.clear()
+  collidermap.clear()
+  handleMap.clear()
+  world.bodies.free()
+
+  postMessage({
+    event: events.DESTROY_ALL_RIGIDBODIES,
+    pid,
+  })
 }
 
 const setGravity = (x: number, y: number, z: number) => {
@@ -207,6 +245,8 @@ self.addEventListener('message', (message) => {
     return setDebugDraw(data.on, data.slowdown)
   case events.CREATE_RIGIDBODIES:
     return createRigidBodies(data.bodies)
+  case events.DESTROY_ALL_RIGIDBODIES:
+    return destroyAllRigidBodies(data.pid)
   case events.APPLY_IMPULSES:
     return applyImpulses(new Float32Array(data.buffer))
   case events.APPLY_TORQUE_IMPULSES:

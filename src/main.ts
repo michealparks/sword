@@ -16,9 +16,8 @@ export * from './types'
 export { count } from './lib'
 export { dynamicCount } from './lib/dynamic'
 export { ColliderType } from './constants/collider'
-export {
-  ActiveCollisionTypes, ActiveEvents, RigidBodyType
-} from '@dimforge/rapier3d-compat'
+export { RigidBodyType } from './constants/rigidbody'
+export { ActiveCollisionTypes, ActiveEvents } from '@dimforge/rapier3d-compat'
 
 type Listener = (...args: any) => void
 type Events = 'start' | 'end'
@@ -133,6 +132,21 @@ export const running = () => {
  */
 export const fps = () => {
   return currentFps
+}
+
+/**
+ * Frees all rigidbodies from memory.
+ *
+ * @returns A promise that resolves once all bodies are freed.
+ */
+export const destroyAllRigidBodies = () => {
+  const pid = createPromiseId()
+  // @TODO free bodies in this thread
+  worker.postMessage({
+    event: events.DESTROY_ALL_RIGIDBODIES,
+    pid,
+  })
+  return createPromise<undefined>(pid)
 }
 
 const tick = () => {
