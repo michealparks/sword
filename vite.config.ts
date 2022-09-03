@@ -1,25 +1,29 @@
 import path from 'node:path' 
 import { defineConfig } from 'vite'
-import ssl from '@vitejs/plugin-basic-ssl'
-import wasm from 'vite-plugin-wasm'
+import mkcert from 'vite-plugin-mkcert'
+// import wasm from 'vite-plugin-wasm'
 
 export default defineConfig({
+  build: {
+    minify: 'terser',
+  },
+  envPrefix: ['THREE', 'SWORD'],
+  plugins: [
+    mkcert(),
+    // wasm(),
+  ],
+  publicDir: 'assets',
   server: {
-    port: 5174,
-    strictPort: true,
-    // https: true,
     fs: {
       strict: true,
       allow: ['.'],
     },
     headers: {
-      'Cross-Origin-Opener-Policy': 'same-origin',
       'Cross-Origin-Embedder-Policy': 'require-corp',
+      'Cross-Origin-Opener-Policy': 'same-origin',
     },
+    https: true,
+    port: 5173,
+    strictPort: true,
   },
-  envPrefix: ['THREE', 'SWORD'],
-  plugins: [
-    // ssl(),
-    wasm(),
-  ],
 })

@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import * as sword from '../../../src/main'
-import { scene } from 'three-kit'
+import { scene, xr } from 'three-kit'
 
 export const floorSize = 20
 export const floorHeight = 0.3
@@ -22,3 +22,7 @@ sword.createRigidBody(floor, {
   hy: floorHeight / 2,
   hz: floorSize / 2,
 })
+
+if (import.meta.env.THREE_XR === 'true') {
+  xr.enableTeleport(floor)
+}
