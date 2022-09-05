@@ -17,7 +17,8 @@ export { count } from './lib'
 export { dynamicCount } from './lib/dynamic'
 export { ColliderType } from './constants/collider'
 export { RigidBodyType } from './constants/rigidbody'
-export { ActiveCollisionTypes, ActiveEvents } from '@dimforge/rapier3d-compat'
+export { ActiveEvents } from './constants/active-events'
+export { ActiveCollisionTypes } from '@dimforge/rapier3d-compat'
 
 type Listener = (...args: any) => void
 type Events = 'start' | 'end'
@@ -31,12 +32,15 @@ let isRunning = false
 
 export const onCollision = (event: 'start' | 'end', id: number, callback: Listener) => {
   const type = eventmap.get(event)!
+  const result = type.get(id)
 
-  if (!type.has(id)) {
-    type.set(id, [])
+  if (result === undefined) {
+    type.set(id, [callback])
+  } else {
+    result.push(callback)
   }
 
-  type.get(id)!.push(callback!)
+  console.log(eventmap)
 }
 
 const emitCollision = (name: Events, id: number, data?: unknown) => {
@@ -52,17 +56,44 @@ const emitCollision = (name: Events, id: number, data?: unknown) => {
   }
 }
 
-const emitCollisionEvents = (collisions: Float32Array) => {
+const emitContact = (
+  name: Events, id: number, id2: number,
+  p1x: number, p1y: number, p1z: number,
+  p2x: number, p2y: number, p2z: number
+) => {
+  const type = eventmap.get(name)!
+  const callbacks = type.get(id)
+
+  console.log(callbacks)
+
+  if (callbacks === undefined) {
+    return
+  }
+
+  for (let i = 0, l = callbacks.length; i < l; i += 1) {
+    callbacks[i](id2, p1x, p1y, p1z, p2x, p2y, p2z)
+  }
+}
+
+const emitCollisionEvents = (collisions: Float32Array, contacts: Float32Array) => {
   for (let i = 0, l = collisions.length; i < l; i += 3) {
     const id1 = collisions[i + 0]
     const id2 = collisions[i + 1]
     const start = collisions[i + 2] === 1
 
-    if (start) {
-      emitCollision('start', id1, id2)
-    } else {
-      emitCollision('end', id1, id2)
-    }
+    emitCollision(start ? 'start' : 'end', id1, id2)
+  }
+
+  for (let i = 0, l = contacts.length; i < l; i += 9) {
+    const id1 = contacts[i + 0]
+    const id2 = contacts[i + 1]
+    const start = contacts[i + 2] === 1
+
+    emitContact(
+      start ? 'start' : 'end', id1, id2,
+      contacts[i + 3], contacts[i + 4], contacts[i + 5],
+      contacts[i + 6], contacts[i + 7], contacts[i + 8]
+    )
   }
 }
 
@@ -178,7 +209,7 @@ worker.addEventListener('message', (message) => {
   case events.RUN:
     return execPromise(data)
   case events.TRANSFORMS:
-    emitCollisionEvents(new Float32Array(data.collisions))
+    emitCollisionEvents(new Float32Array(data.collisions), new Float32Array(data.contacts))
     return updateDynamicBodies(new Float32Array(data.transforms))
   default:
     throw new Error(`Unhandled event ${data.event}`)

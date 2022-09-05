@@ -2,15 +2,17 @@ import type { RigidBodyWorkerOptions, Transform } from '../types/internal'
 import {
   applyImpulses, applyLinearAndTorqueImpulses, applyTorqueImpulses
 } from './appliers'
-import { bodies, bodymap, collidermap, handleMap } from './bodies'
+import { bodies, bodymap, collidermap, handleMap, reportContact } from './bodies'
 import {
   setActiveCollisionTypes,
   setNextKinematicTransforms,
+  setMasses,
   setTransforms,
   setTransformsAndVelocities,
   setTranslations,
   setVelocities
 } from './setters'
+import { ActiveEvents } from '../constants/active-events'
 import RAPIER from '@dimforge/rapier3d-compat'
 import { RigidBodyType } from '../constants/rigidbody'
 import { createCollider } from './colliders'
@@ -78,29 +80,46 @@ const tick = () => {
   transforms[cursor] = -1
 
   const registered: number[] = []
+  const contacts: number[] = []
+
   eventQueue.drainCollisionEvents((handle1, handle2, started) => {
     const id1 = handleMap.get(handle1)!
     const id2 = handleMap.get(handle2)!
-    registered.push(id1, id2, started ? 1 : 0)
 
-    const collider1 = collidermap.get(id1)!
-    const collider2 = collidermap.get(id2)!
+    if (started && reportContact.get(id1)) {
+      const collider1 = collidermap.get(id1)!
+      const collider2 = collidermap.get(id2)!
 
-    if (started) {
-      // world.contactPair(collider1, collider2, (manifold, flipped) => {
-      //   console.log(manifold.localContactPoint1(), flipped)
-      // })
+      world.contactPair(collider1, collider2, (manifold, flipped) => {
+        let point1 = manifold.localContactPoint1(0)
+        let point2 = manifold.localContactPoint2(0)
+
+        if (point1 !== null && point2 !== null) {
+          if (flipped) {
+            const temp = point1
+            point1 = point2
+            point2 = temp
+          }
+
+          contacts.push(id1, id2, started ? 1 : 0)
+          contacts.push(point1.x, point1.y, point1.z)
+          contacts.push(point2.x, point2.y, point2.z)
+        }
+      })
+    } else {
+      registered.push(id1, id2, started ? 1 : 0)
     }
-    
   })
 
   const collisions = new Float32Array(registered)
+  const contactsBuffer = new Float32Array(contacts).buffer
 
   self.postMessage({
     collisions: collisions.buffer,
+    contacts: contactsBuffer,
     event: events.TRANSFORMS,
     transforms: transforms.buffer,
-  }, [transforms.buffer, collisions.buffer])
+  }, [collisions.buffer, contactsBuffer, transforms.buffer])
 }
 
 const debugTick = () => {
@@ -183,15 +202,18 @@ const createRigidBody = (
     .setMass(1)
     .setSensor(options.type === RigidBodyType.Sensor)
 
-  if (options.events > -1) {
-    colliderDescription.setActiveEvents(options.events)
-  }
-
   const rigidBody = world.createRigidBody(bodyDescription)
   const collider = world.createCollider(colliderDescription, rigidBody)
 
-  // @TODO ???
-  collider.setActiveEvents(RAPIER.ActiveEvents.COLLISION_EVENTS)
+  if (options.events === ActiveEvents.CONTACT_EVENTS) {
+    collider.setActiveEvents(RAPIER.ActiveEvents.COLLISION_EVENTS)
+    reportContact.set(transform.id, true)
+  } else if (options.events > -1) {
+    collider.setActiveEvents(options.events)
+  } else {
+    // @TODO ???
+    collider.setActiveEvents(RAPIER.ActiveEvents.COLLISION_EVENTS)
+  }
 
   if (options.type === RigidBodyType.Dynamic) {
     bodies.add(rigidBody)
@@ -217,6 +239,7 @@ const destroyAllRigidBodies = (pid: number) => {
   bodymap.clear()
   collidermap.clear()
   handleMap.clear()
+  reportContact.clear()
   world.bodies.free()
 
   postMessage({
@@ -257,6 +280,8 @@ self.addEventListener('message', (message) => {
     return setActiveCollisionTypes(data.id, data.types)
   case events.SET_GRAVITY:
     return setGravity(data.x, data.y, data.z)
+  case events.SET_MASSES:
+    return setMasses(new Float32Array(data.masses))
   case events.SET_NEXT_KINEMATIC_TRANSFORMS:
     return setNextKinematicTransforms(new Float32Array(data.buffer))
   case events.SET_TRANSLATIONS:

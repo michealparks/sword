@@ -7,5 +7,3 @@ const [ship, asteroid] = await Promise.all([
   assets.load<GLTF>('ship.glb'),
   assets.load<GLTF>('asteroid.glb'),
 ])
-
-console.log(asteroid)

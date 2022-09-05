@@ -1,3 +1,4 @@
+import type { ActiveEvents } from '../constants/active-events'
 import type { ColliderType } from '../constants/collider'
 import type { RigidBodyType } from '../constants/rigidbody'
 
@@ -22,7 +23,7 @@ export interface RigidBodyOptions {
   canSleep?: boolean
   ccd?: boolean
   type: RigidBodyTypes
-  events?: number
+  events?: ActiveEvents
 }
 
 export interface BallRigidBodyOptions extends RigidBodyOptions {

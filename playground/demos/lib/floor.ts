@@ -5,7 +5,7 @@ import { scene, xr } from 'three-kit'
 export const floorSize = 20
 export const floorHeight = 0.3
 
-const geometry = new THREE.BoxBufferGeometry(floorSize, floorHeight, floorSize, 1, 1)
+const geometry = new THREE.BoxGeometry(floorSize, floorHeight, floorSize, 1, 1)
 const material = new THREE.MeshStandardMaterial({ color: 0xCCCCCC })
 
 export const floor = new THREE.Mesh(geometry, material)
