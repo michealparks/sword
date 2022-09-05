@@ -25,12 +25,6 @@ export const setCollisionGroups = (id: number, group: number) => {
   collidermap.get(id)!.setCollisionGroups(group)
 }
 
-export const setMasses = (masses: Float32Array) => {
-  for (let i = 0, l = masses.length; i < l; i += 2) {
-    bodymap.get(masses[i + 0])!.collider(0).setMass(masses[i + 1])
-  }
-}
-
 export const setNextKinematicTransforms = (transforms: Float32Array) => {
   for (let i = 0, l = transforms.length; i < l; i += 8) {
     const body = bodymap.get(transforms[i + 0])!
