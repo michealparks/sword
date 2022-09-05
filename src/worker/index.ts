@@ -217,7 +217,6 @@ const createRigidBody = (
     .setSensor(options.type === RigidBodyType.Sensor)
 
   if (options.groups.length > 0 || options.filter.length > 0) {
-    console.log(options.groups, options.filter)
     const mask = createMask(options.groups, options.filter)
     colliderDescription.setCollisionGroups(mask)
   }
