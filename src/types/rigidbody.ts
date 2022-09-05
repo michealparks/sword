@@ -22,9 +22,11 @@ export type RigidBodyTypes =
 export interface RigidBodyOptions {
   canSleep?: boolean
   ccd?: boolean
-  type: RigidBodyTypes
-  events?: ActiveEvents
   density?: number
+  events?: ActiveEvents
+  filter?: number[]
+  groups?: number[]
+  type: RigidBodyTypes
 }
 
 export interface BallRigidBodyOptions extends RigidBodyOptions {

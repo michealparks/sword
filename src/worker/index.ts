@@ -14,8 +14,10 @@ import {
 import { ActiveEvents } from '../constants/active-events'
 import RAPIER from '@dimforge/rapier3d-compat'
 import { RigidBodyType } from '../constants/rigidbody'
+import { bitmask } from '../lib/bitmask'
 import { createCollider } from './colliders'
 import { events } from '../constants/events'
+
 
 let world: RAPIER.World
 let eventQueue: RAPIER.EventQueue
@@ -177,6 +179,20 @@ const mapType = (type: RigidBodyType) => {
   }
 }
 
+const createMask = (groups: number[], filter: number[]) => {
+  const bits = new Array(32).fill(0)
+
+  for (let i = 0, l = groups.length; i < l; i += 1) {
+    bits[groups[i]] = 1
+  }
+
+  for (let i = 0, l = filter.length; i < l; i += 1) {
+    bits[16 + filter[i]] = 1
+  }
+
+  return bitmask.create(bits)
+}
+
 const createRigidBody = (
   transform: Transform,
   options: RigidBodyWorkerOptions
@@ -199,6 +215,12 @@ const createRigidBody = (
     .setRestitution(0.5)
     .setRestitutionCombineRule(RAPIER.CoefficientCombineRule.Max)
     .setSensor(options.type === RigidBodyType.Sensor)
+
+  if (options.groups.length > 0 || options.filter.length > 0) {
+    console.log(options.groups, options.filter)
+    const mask = createMask(options.groups, options.filter)
+    colliderDescription.setCollisionGroups(mask)
+  }
 
   const rigidBody = world.createRigidBody(bodyDescription)
   const collider = world.createCollider(colliderDescription, rigidBody)

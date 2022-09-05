@@ -26,5 +26,7 @@ mesh.instanceColor!.needsUpdate = true
 sword.createRigidBodies(mesh, {
   type: sword.RigidBodyType.Dynamic,
   collider: sword.ColliderType.Ball,
+  groups: [2],
+  filter: [2],
   radius,
 })

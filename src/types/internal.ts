@@ -17,6 +17,8 @@ interface WorkerOptions {
   ccd: boolean
   events: number
   density: number
+  filter: number[]
+  groups: number[]
   instances: Transform[]
   type: RigidBodyTypes
 }

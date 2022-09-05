@@ -32,32 +32,11 @@ const ids = sword.createRigidBodies(mesh, {
   collider: sword.ColliderType.Ball,
   radius,
   canSleep: false,
+  filter: [0, 1],
+  groups: [1],
 })
 
-// setTimeout(() => {
-//   {
-//     const impulses = new Float32Array(ids.length * 4)
-//     const scale = 0.05
-//     const randomTorque = () => {
-//       return (Math.random() * scale) - (scale / 2)
-//     }
-  
-//     for (let i = 0, j = 0, l = ids.length; i < l; i += 1, j += 4) {
-//       impulses[j + 0] = ids[i]
-//       impulses[j + 1] = randomTorque()
-//       impulses[j + 2] = randomTorque()
-//       impulses[j + 3] = randomTorque()
-//     }
-    
-//     sword.applyTorqueImpulses(impulses)
-//   }
-  
-// }, 200)
-
-console.time()
 sword.once('bodiesLoaded', () => {
-  console.timeEnd()
-  console.log('loaded')
   const impulses = new Float32Array(ids.length * 7)
   
   const random = () => {
