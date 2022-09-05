@@ -39,8 +39,6 @@ export const onCollision = (event: 'start' | 'end', id: number, callback: Listen
   } else {
     result.push(callback)
   }
-
-  console.log(eventmap)
 }
 
 const emitCollision = (name: Events, id: number, data?: unknown) => {
@@ -63,8 +61,6 @@ const emitContact = (
 ) => {
   const type = eventmap.get(name)!
   const callbacks = type.get(id)
-
-  console.log(callbacks)
 
   if (callbacks === undefined) {
     return
