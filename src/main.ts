@@ -10,6 +10,7 @@ import { worker } from './lib/worker'
 export * from './lib/appliers'
 export * from './lib/creators'
 export * from './lib/events'
+export * from './lib/getters'
 export * from './lib/setters'
 export * from './types'
 
@@ -196,17 +197,22 @@ worker.addEventListener('message', (message) => {
   switch (data.event) {
   case events.INIT:
     update(tick)
-    return execPromise(data)
+    return execPromise(data.pid)
   case events.DEBUG_DRAW:
     return updateDebugDrawer(data)
   case events.FPS:
     currentFps = data.fps
     return undefined
   case events.RUN:
-    return execPromise(data)
+    return execPromise(data.pid)
   case events.TRANSFORMS:
-    emitCollisionEvents(new Float32Array(data.collisions), new Float32Array(data.contacts))
+    emitCollisionEvents(
+      new Float32Array(data.collisions),
+      new Float32Array(data.contacts)
+    )
     return updateDynamicBodies(new Float32Array(data.transforms))
+  case events.GET_VELOCITIES:
+    return execPromise(data.pid, new Float32Array(data.buffer))
   default:
     throw new Error(`Unhandled event ${data.event}`)
   }

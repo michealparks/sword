@@ -23,10 +23,15 @@ for (let index = 0; index < constants.NUM_MESHES; index += 1) {
 
 mesh.instanceColor!.needsUpdate = true
 
-sword.createRigidBodies(mesh, {
+const ids = sword.createRigidBodies(mesh, {
   type: sword.RigidBodyType.Dynamic,
   collider: sword.ColliderType.Ball,
   groups: [2],
   filter: [2],
   radius,
 })
+
+window.setInterval(async () => {
+  const result = await sword.getVelocities(new Float32Array(ids))
+  console.log(result)
+}, 2000)

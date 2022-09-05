@@ -4,6 +4,7 @@ export const enum events {
   INIT,
   RUN,
   PAUSE,
+  GET_VELOCITIES,
   SET_ACTIVE_COLLISION_TYPES,
   SET_DEBUG_DRAW,
   SET_GRAVITY,

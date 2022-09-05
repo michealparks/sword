@@ -17,6 +17,7 @@ import { RigidBodyType } from '../constants/rigidbody'
 import { bitmask } from '../lib/bitmask'
 import { createCollider } from './colliders'
 import { events } from '../constants/events'
+import { getVelocities } from './getters'
 
 
 let world: RAPIER.World
@@ -295,6 +296,8 @@ self.addEventListener('message', (message) => {
     return applyTorqueImpulses(new Float32Array(data.buffer))
   case events.APPLY_LINEAR_AND_TORQUE_IMPULSES:
     return applyLinearAndTorqueImpulses(new Float32Array(data.buffer))
+  case events.GET_VELOCITIES:
+    return getVelocities(new Float32Array(data.buffer), data.pid)
   case events.SET_ACTIVE_COLLISION_TYPES:
     return setActiveCollisionTypes(data.id, data.types)
   case events.SET_GRAVITY:

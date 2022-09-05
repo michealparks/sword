@@ -20,9 +20,9 @@ export const createPromise = <Type>(id: number): Promise<Type> => {
   })
 }
 
-export const execPromise = (data: any) => {
-  promises.get(data.pid)(data)
-  promises.delete(data.pid)
+export const execPromise = (pid: number, data?: any) => {
+  promises.get(pid)(data)
+  promises.delete(pid)
 }
 
 /**
