@@ -16,6 +16,7 @@ interface WorkerOptions {
   canSleep: boolean
   ccd: boolean
   events: number
+  density: number
   instances: Transform[]
   type: RigidBodyTypes
 }

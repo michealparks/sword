@@ -32,6 +32,7 @@ export const createRigidBody = (
     collider2: options.hy ?? options.halfHeight,
     collider3: options.hz,
     events: options.events ?? -1,
+    density: options.density ?? 1,
     instances: [{
       id,
       qw: quaternion.w,
@@ -88,6 +89,7 @@ export const createRigidBodies = (
     collider2: options.hy ?? options.halfHeight,
     collider3: options.hz,
     events: options.events ?? -1,
+    density: options.density ?? 1,
     indices: options.indices,
     instances,
     type: options.type,

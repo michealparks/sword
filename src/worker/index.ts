@@ -6,7 +6,6 @@ import { bodies, bodymap, collidermap, handleMap, reportContact } from './bodies
 import {
   setActiveCollisionTypes,
   setNextKinematicTransforms,
-  setMasses,
   setTransforms,
   setTransformsAndVelocities,
   setTranslations,
@@ -194,12 +193,11 @@ const createRigidBody = (
     .setCcdEnabled(options.ccd)
 
   const colliderDescription = createCollider(options)
-    .setDensity(1.3)
+    .setDensity(options.density)
     .setFriction(0.2)
     .setFrictionCombineRule(RAPIER.CoefficientCombineRule.Max)
     .setRestitution(0.5)
     .setRestitutionCombineRule(RAPIER.CoefficientCombineRule.Max)
-    .setMass(1)
     .setSensor(options.type === RigidBodyType.Sensor)
 
   const rigidBody = world.createRigidBody(bodyDescription)
@@ -280,8 +278,6 @@ self.addEventListener('message', (message) => {
     return setActiveCollisionTypes(data.id, data.types)
   case events.SET_GRAVITY:
     return setGravity(data.x, data.y, data.z)
-  case events.SET_MASSES:
-    return setMasses(new Float32Array(data.masses))
   case events.SET_NEXT_KINEMATIC_TRANSFORMS:
     return setNextKinematicTransforms(new Float32Array(data.buffer))
   case events.SET_TRANSLATIONS:

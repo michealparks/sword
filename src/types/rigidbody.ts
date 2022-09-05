@@ -24,6 +24,7 @@ export interface RigidBodyOptions {
   ccd?: boolean
   type: RigidBodyTypes
   events?: ActiveEvents
+  density?: number
 }
 
 export interface BallRigidBodyOptions extends RigidBodyOptions {

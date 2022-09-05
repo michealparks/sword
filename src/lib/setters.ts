@@ -25,13 +25,6 @@ export const setGravity = (x: number, y: number, z: number) => {
   })
 }
 
-export const setMasses = (masses: Float32Array) => {
-  worker.postMessage({
-    buffer: masses.buffer,
-    event: events.SET_MASSES,
-  }, [masses.buffer])
-}
-
 export const setNextKinematicTransforms = (transforms: Float32Array) => {
   worker.postMessage({
     buffer: transforms.buffer,
