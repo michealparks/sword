@@ -39,26 +39,40 @@ export const onCollision = (event: 'start' | 'end', id: number, callback: Listen
   }
 }
 
-const emitCollision = (name: Events, id: number, id2: number) => {
-  const channel = eventmap.get(`${name}${id}`)
+const emitCollision = (name: Events, id1: number, id2: number) => {
+  const channel1 = eventmap.get(`${name}${id1}`)
+  const channel2 = eventmap.get(`${name}${id2}`)
 
-  if (channel !== undefined) {
-    for (let i = 0, l = channel.length; i < l; i += 1) {
-      channel[i](id2)
+  if (channel1 !== undefined) {
+    for (let i = 0, l = channel1.length; i < l; i += 1) {
+      channel1[i](id2)
+    }
+  }
+
+  if (channel2 !== undefined) {
+    for (let i = 0, l = channel2.length; i < l; i += 1) {
+      channel2[i](id1)
     }
   }
 }
 
 const emitContact = (
-  name: Events, id: number, id2: number,
+  name: Events, id1: number, id2: number,
   p1x: number, p1y: number, p1z: number,
   p2x: number, p2y: number, p2z: number
 ) => {
-  const channel = eventmap.get(`${name}${id}`)
+  const channel1 = eventmap.get(`${name}${id1}`)
+  const channel2 = eventmap.get(`${name}${id2}`)
 
-  if (channel !== undefined) {
-    for (let i = 0, l = channel.length; i < l; i += 1) {
-      channel[i](id2, p1x, p1y, p1z, p2x, p2y, p2z)
+  if (channel1 !== undefined) {
+    for (let i = 0, l = channel1.length; i < l; i += 1) {
+      channel1[i](id2, p1x, p1y, p1z, p2x, p2y, p2z)
+    }
+  }
+
+  if (channel2 !== undefined) {
+    for (let i = 0, l = channel2.length; i < l; i += 1) {
+      channel2[i](id1, p2x, p2y, p2z, p1x, p1y, p1z)
     }
   }
 }
