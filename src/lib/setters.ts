@@ -1,6 +1,8 @@
 import { events } from '../constants/events'
 import { worker } from './worker'
 
+const pendingKinematicTransform: number[] = []
+
 export const setActiveCollisionTypes = (id: number, types: number) => {
   worker.postMessage({
     event: events.SET_ACTIVE_COLLISION_TYPES,
@@ -25,11 +27,23 @@ export const setGravity = (x: number, y: number, z: number) => {
   })
 }
 
+/**
+ * 
+ * @param transforms 
+ */
 export const setNextKinematicTransforms = (transforms: Float32Array) => {
   worker.postMessage({
     buffer: transforms.buffer,
     event: events.SET_NEXT_KINEMATIC_TRANSFORMS,
   }, [transforms.buffer])
+}
+
+export const setNextKinematicTransform = (
+  id: number,
+  x: number, y: number, z: number,
+  qx: number, qy: number, qz: number, qw: number
+) => {
+  pendingKinematicTransform.push(id, x, y, z, qx, qy, qz, qw)
 }
 
 export const setTranslations = (

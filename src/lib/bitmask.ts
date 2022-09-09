@@ -1,8 +1,7 @@
 /**
  * Credit: https://github.com/gsimone/things#bitmask
  */
-
- type Bit = 0 | 1
+type Bit = 0 | 1
 
 const create = (bits: Bit[]) => {
   return Number.parseInt(bits.reverse().join(''), 2)

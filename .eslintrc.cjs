@@ -63,5 +63,6 @@ module.exports = {
     'quote-props': ['error', 'consistent-as-needed'],
     'quotes': ['error', 'single'],
     'semi': ['error', 'never'],
+    "@typescript-eslint/no-non-null-assertion": "off"
   },
 }

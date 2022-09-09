@@ -6,11 +6,7 @@ import { mesh, radius } from './lib/spheres'
 
 sword.setGravity(0, 0, 0)
 
-const m4 = new THREE.Matrix4()
 const matrix = new THREE.Matrix4()
-
-m4.copy(mesh.matrixWorld).invert()
-
 const color = new THREE.Color()
 
 const size = 15

@@ -1,5 +1,8 @@
 import { events } from '../constants/events'
+import { update } from 'three-kit'
 import { worker } from './worker'
+
+export const pendingImpulses: number[] = []
 
 /**
  * @param impulses an array of impulses
@@ -11,6 +14,14 @@ export const applyImpulses = (impulses: Float32Array) => {
   }, [impulses.buffer])
 }
 
+export const applyImpulse = (id: number, x: number, y: number, z: number) => {
+  pendingImpulses.push(id, x, y, z)
+}
+
+/**
+ *
+ * @param impulses an array of impulses
+ */
 export const applyLinearAndTorqueImpulses = (impulses: Float32Array) => {
   worker.postMessage({
     buffer: impulses.buffer,
@@ -25,3 +36,9 @@ export const applyTorqueImpulses = (impulses: Float32Array) => {
   }, [impulses.buffer])
 }
 
+update(() => {
+  if (pendingImpulses.length > 0) {
+    applyImpulses(new Float32Array(pendingImpulses))
+    pendingImpulses.splice(0, pendingImpulses.length)
+  }
+})

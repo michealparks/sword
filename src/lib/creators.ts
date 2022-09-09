@@ -13,7 +13,7 @@ const quat = new THREE.Quaternion()
 
 /**
  *
- * @param mesh A THREE.Mesh
+ * @param object A THREE.Mesh
  * @param options {RigidBodyParams}
  * @returns a list of ids
  */

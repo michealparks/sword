@@ -24,7 +24,6 @@ let world: RAPIER.World
 let eventQueue: RAPIER.EventQueue
 let now = 0
 let then = 0
-let dt = 0
 let fps = 0
 let tickId = -1
 let debugTickId = -1

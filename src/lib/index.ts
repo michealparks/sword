@@ -1,4 +1,4 @@
-const promises = new Map<number, any>()
+const promises = new Map<number, unknown>()
 
 let currentPid = 0
 let currentId = -1
@@ -20,8 +20,9 @@ export const createPromise = <Type>(id: number): Promise<Type> => {
   })
 }
 
-export const execPromise = (pid: number, data?: any) => {
-  promises.get(pid)(data)
+export const execPromise = (pid: number, data?: unknown) => {
+  const resolver = promises.get(pid) as (arg: unknown) => void
+  resolver(data)
   promises.delete(pid)
 }
 
