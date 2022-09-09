@@ -43,7 +43,7 @@ const ids = sword.createRigidBodies(mesh, {
 
 for (const id of ids) {
   sword.onCollision('start', id, (...args) => {
-    console.log('start', id, args)
+    // console.log('start', id, args)
   })
 }
 

@@ -6,8 +6,8 @@ export const getVelocities = (ids: Float32Array) => {
   const pid = createPromiseId()
 
   worker.postMessage({
-    buffer: ids.buffer,
     event: events.GET_VELOCITIES,
+    ids,
     pid,
   }, [ids.buffer])
 

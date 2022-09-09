@@ -9,8 +9,8 @@ export const pendingImpulses: number[] = []
  */
 export const applyImpulses = (impulses: Float32Array) => {
   worker.postMessage({
-    buffer: impulses.buffer,
     event: events.APPLY_IMPULSES,
+    impulses,
   }, [impulses.buffer])
 }
 
@@ -24,15 +24,15 @@ export const applyImpulse = (id: number, x: number, y: number, z: number) => {
  */
 export const applyLinearAndTorqueImpulses = (impulses: Float32Array) => {
   worker.postMessage({
-    buffer: impulses.buffer,
     event: events.APPLY_LINEAR_AND_TORQUE_IMPULSES,
+    impulses,
   }, [impulses.buffer])
 }
 
 export const applyTorqueImpulses = (impulses: Float32Array) => {
   worker.postMessage({
-    buffer: impulses.buffer,
     event: events.APPLY_TORQUE_IMPULSES,
+    impulses,
   }, [impulses.buffer])
 }
 

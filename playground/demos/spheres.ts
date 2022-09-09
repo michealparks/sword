@@ -28,10 +28,17 @@ const ids = sword.createRigidBodies(mesh, {
   collider: sword.ColliderType.Ball,
   groups: [2],
   filter: [2],
+  events: sword.ActiveEvents.CONTACT_EVENTS,
   radius,
 })
 
+for (let id of ids) {
+  sword.onCollision('start', id, (...args) => {
+    // console.log('collision', id, args)
+  })
+}
+
 window.setInterval(async () => {
   const result = await sword.getVelocities(new Float32Array(ids))
-  console.log(result)
+  // console.log(result)
 }, 2000)

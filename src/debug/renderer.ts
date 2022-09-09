@@ -12,14 +12,7 @@ const geometry = new THREE.BufferGeometry()
 const lines = new THREE.LineSegments(geometry, material)
 lines.frustumCulled = false
 
-interface Buffers {
-  vertices: ArrayBuffer
-  colors: ArrayBuffer
-}
-
-export const updateDebugDrawer = (buffers: Buffers) => {
-  const vertices = new Float32Array(buffers.vertices)
-  const colors = new Float32Array(buffers.colors)
+export const updateDebugDrawer = (vertices: Float32Array, colors: Float32Array) => {
   lines.geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3))
   lines.geometry.setAttribute('color', new THREE.BufferAttribute(colors, 4))
 }

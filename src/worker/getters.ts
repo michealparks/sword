@@ -18,8 +18,8 @@ export const getVelocities = (ids: Float32Array, pid: number) => {
   }
 
   self.postMessage({
-    buffer: velocities.buffer,
     event: events.GET_VELOCITIES,
     pid,
+    velocities,
   }, [velocities.buffer])
 }

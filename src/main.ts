@@ -91,13 +91,10 @@ const emitCollisionEvents = (
   }
 
   for (let i = 0, l = contactStart.length; i < l; i += 8) {
-    const id1 = contactStart[i + 0]
-    const id2 = contactStart[i + 1]
-
     emitContact(
       'start',
-      id1,
-      id2,
+      contactStart[i + 0],
+      contactStart[i + 1],
       contactStart[i + 2],
       contactStart[i + 3],
       contactStart[i + 4],
@@ -220,7 +217,7 @@ worker.addEventListener('message', (message) => {
     update(tick)
     return execPromise(data.pid)
   case events.DEBUG_DRAW:
-    return updateDebugDrawer(data)
+    return updateDebugDrawer(data.vertices, data.colors)
   case events.FPS:
     currentFps = data.fps
     return undefined
@@ -228,13 +225,13 @@ worker.addEventListener('message', (message) => {
     return execPromise(data.pid)
   case events.TRANSFORMS:
     emitCollisionEvents(
-      new Float32Array(data.collisionStart),
-      new Float32Array(data.collisionEnd),
-      new Float32Array(data.contactStart)
+      data.collisionStart,
+      data.collisionEnd,
+      data.contactStart
     )
-    return updateDynamicBodies(new Float32Array(data.transforms))
+    return updateDynamicBodies(data.transforms)
   case events.GET_VELOCITIES:
-    return execPromise(data.pid, new Float32Array(data.buffer))
+    return execPromise(data.pid, data.velocities)
   default:
     throw new Error(`Unhandled event ${data.event}`)
   }

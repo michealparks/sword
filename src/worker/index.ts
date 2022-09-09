@@ -126,11 +126,11 @@ const tick = () => {
   const contactStartArray = new Float32Array(contactStart)
 
   self.postMessage({
-    collisionEnd: collisionEndArray.buffer,
-    collisionStart: collisionStartArray.buffer,
-    contacts: contactStartArray.buffer,
+    collisionEnd: collisionEndArray,
+    collisionStart: collisionStartArray,
+    contactStart: contactStartArray,
     event: events.TRANSFORMS,
-    transforms: transforms.buffer,
+    transforms,
   }, [
     collisionEndArray.buffer,
     collisionStartArray.buffer,
@@ -144,13 +144,13 @@ const debugTick = () => {
     return
   }
 
-  const buffers = world.debugRender()
+  const { colors, vertices } = world.debugRender()
 
   self.postMessage({
-    colors: buffers.colors.buffer,
+    colors,
     event: events.DEBUG_DRAW,
-    vertices: buffers.vertices.buffer,
-  }, [buffers.vertices.buffer, buffers.colors.buffer])
+    vertices,
+  }, [vertices.buffer, colors.buffer])
 }
 
 const run = (pid: number) => {
@@ -306,31 +306,27 @@ self.addEventListener('message', (message) => {
   case events.DESTROY_ALL_RIGIDBODIES:
     return destroyAllRigidBodies(data.pid)
   case events.APPLY_IMPULSES:
-    return applyImpulses(new Float32Array(data.buffer))
+    return applyImpulses(data.impulses)
   case events.APPLY_TORQUE_IMPULSES:
-    return applyTorqueImpulses(new Float32Array(data.buffer))
+    return applyTorqueImpulses(data.impulses)
   case events.APPLY_LINEAR_AND_TORQUE_IMPULSES:
-    return applyLinearAndTorqueImpulses(new Float32Array(data.buffer))
+    return applyLinearAndTorqueImpulses(data.impulses)
   case events.GET_VELOCITIES:
-    return getVelocities(new Float32Array(data.buffer), data.pid)
+    return getVelocities(data.ids, data.pid)
   case events.SET_ACTIVE_COLLISION_TYPES:
     return setActiveCollisionTypes(data.id, data.types)
   case events.SET_GRAVITY:
     return setGravity(data.x, data.y, data.z)
   case events.SET_NEXT_KINEMATIC_TRANSFORMS:
-    return setNextKinematicTransforms(new Float32Array(data.buffer))
+    return setNextKinematicTransforms(data.transforms)
   case events.SET_TRANSLATIONS:
-    return setTranslations(
-      new Float32Array(data.buffer),
-      data.resetAngvel,
-      data.resetLinvel
-    )
+    return setTranslations(data.translations, data.resetAngvel, data.resetLinvel)
   case events.SET_TRANSFORMS:
-    return setTransforms(new Float32Array(data.buffer))
+    return setTransforms(data.transforms)
   case events.SET_TRANSFORMS_AND_VELOCITIES:
-    return setTransformsAndVelocities(new Float32Array(data.buffer))
+    return setTransformsAndVelocities(data.array)
   case events.SET_VELOCITIES:
-    return setVelocities(new Float32Array(data.buffer))
+    return setVelocities(data.velocities)
   default:
     throw new Error(`Unexpected event ${data.event}!`)
   }

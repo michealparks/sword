@@ -52,30 +52,30 @@ export const setTranslations = (
   resetLinvel: boolean
 ) => {
   worker.postMessage({
-    buffer: translations.buffer,
     event: events.SET_TRANSLATIONS,
     resetAngvel,
     resetLinvel,
+    translations,
   }, [translations.buffer])
 }
 
 export const setTransforms = (transforms: Float32Array) => {
   worker.postMessage({
-    buffer: transforms.buffer,
     event: events.SET_TRANSFORMS,
+    transforms,
   }, [transforms.buffer])
 }
 
 export const setTransformsAndVelocities = (array: Float32Array) => {
   worker.postMessage({
-    buffer: array.buffer,
+    array,
     event: events.SET_TRANSFORMS_AND_VELOCITIES,
   }, [array.buffer])
 }
 
 export const setVelocities = (velocities: Float32Array) => {
   worker.postMessage({
-    buffer: velocities.buffer,
     event: events.SET_VELOCITIES,
+    velocities,
   }, [velocities.buffer])
 }
