@@ -33,8 +33,8 @@ export const setGravity = (x: number, y: number, z: number) => {
  */
 export const setNextKinematicTransforms = (transforms: Float32Array) => {
   worker.postMessage({
-    buffer: transforms.buffer,
     event: events.SET_NEXT_KINEMATIC_TRANSFORMS,
+    transforms,
   }, [transforms.buffer])
 }
 
