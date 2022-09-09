@@ -21,7 +21,7 @@ export { RigidBodyType } from './constants/rigidbody'
 export { ActiveEvents } from './constants/active-events'
 export { ActiveCollisionTypes } from '@dimforge/rapier3d-compat'
 
-type Listener = (...args: unknown[]) => void
+type Listener = (...args: number[]) => void
 type Events = 'start' | 'end'
 
 const eventmap = new Map<string, Listener[]>()
