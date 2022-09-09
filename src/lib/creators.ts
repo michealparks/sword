@@ -35,6 +35,7 @@ export const createRigidBody = (
     events: options.events ?? -1,
     filter: options.filter ?? [],
     groups: options.groups ?? [],
+    indices: options.indices,
     instances: [{
       id,
       qw: quaternion.w,
@@ -67,8 +68,10 @@ export const createRigidBodies = (
     mesh.getMatrixAt(i, m4)
     quat.setFromRotationMatrix(m4)
     vec3.setFromMatrixPosition(m4)
+
     const id = createBodyId()
     ids.push(id)
+
     instances.push({
       id,
       qw: quat.w,
@@ -79,8 +82,6 @@ export const createRigidBodies = (
       y: vec3.y,
       z: vec3.z,
     })
-
-    newBodies.push()
   }
 
   newBodies.push({

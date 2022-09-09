@@ -39,15 +39,13 @@ export const onCollision = (event: 'start' | 'end', id: number, callback: Listen
   }
 }
 
-const emitCollision = (name: Events, id: number, data?: unknown) => {
+const emitCollision = (name: Events, id: number, id2: number) => {
   const channel = eventmap.get(`${name}${id}`)
 
-  if (channel === undefined) {
-    return
-  }
-
-  for (let i = 0, l = channel.length; i < l; i += 1) {
-    channel[i](data)
+  if (channel !== undefined) {
+    for (let i = 0, l = channel.length; i < l; i += 1) {
+      channel[i](id2)
+    }
   }
 }
 
@@ -58,39 +56,40 @@ const emitContact = (
 ) => {
   const channel = eventmap.get(`${name}${id}`)
 
-  if (channel === undefined) {
-    return
-  }
-
-  for (let i = 0, l = channel.length; i < l; i += 1) {
-    channel[i](id2, p1x, p1y, p1z, p2x, p2y, p2z)
+  if (channel !== undefined) {
+    for (let i = 0, l = channel.length; i < l; i += 1) {
+      channel[i](id2, p1x, p1y, p1z, p2x, p2y, p2z)
+    }
   }
 }
 
-const emitCollisionEvents = (collisions: Float32Array, contacts: Float32Array) => {
-  for (let i = 0, l = collisions.length; i < l; i += 3) {
-    const id1 = collisions[i + 0]
-    const id2 = collisions[i + 1]
-    const start = collisions[i + 2] === 1
-
-    emitCollision(start ? 'start' : 'end', id1, id2)
+const emitCollisionEvents = (
+  collisionStart: Float32Array,
+  collisionEnd: Float32Array,
+  contactStart: Float32Array
+) => {
+  for (let i = 0, l = collisionStart.length; i < l; i += 2) {
+    emitCollision('start', collisionStart[i + 0], collisionStart[i + 1])
   }
 
-  for (let i = 0, l = contacts.length; i < l; i += 9) {
-    const id1 = contacts[i + 0]
-    const id2 = contacts[i + 1]
-    const start = contacts[i + 2] === 1
+  for (let i = 0, l = collisionEnd.length; i < l; i += 2) {
+    emitCollision('end', collisionEnd[i + 0], collisionEnd[i + 1])
+  }
+
+  for (let i = 0, l = contactStart.length; i < l; i += 8) {
+    const id1 = contactStart[i + 0]
+    const id2 = contactStart[i + 1]
 
     emitContact(
-      start ? 'start' : 'end',
+      'start',
       id1,
       id2,
-      contacts[i + 3],
-      contacts[i + 4],
-      contacts[i + 5],
-      contacts[i + 6],
-      contacts[i + 7],
-      contacts[i + 8]
+      contactStart[i + 2],
+      contactStart[i + 3],
+      contactStart[i + 4],
+      contactStart[i + 5],
+      contactStart[i + 6],
+      contactStart[i + 7]
     )
   }
 }
@@ -215,8 +214,9 @@ worker.addEventListener('message', (message) => {
     return execPromise(data.pid)
   case events.TRANSFORMS:
     emitCollisionEvents(
-      new Float32Array(data.collisions),
-      new Float32Array(data.contacts)
+      new Float32Array(data.collisionStart),
+      new Float32Array(data.collisionEnd),
+      new Float32Array(data.contactStart)
     )
     return updateDynamicBodies(new Float32Array(data.transforms))
   case events.GET_VELOCITIES:

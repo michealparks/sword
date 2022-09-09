@@ -79,8 +79,9 @@ const tick = () => {
 
   transforms[cursor] = -1
 
-  const registered: number[] = []
-  const contacts: number[] = []
+  const collisionStart: number[] = []
+  const conllisionEnd: number[] = []
+  const contactStart: number[] = []
 
   eventQueue.drainCollisionEvents((handle1, handle2, started) => {
     const id1 = handleMap.get(handle1)!
@@ -101,25 +102,41 @@ const tick = () => {
             point2 = temp
           }
 
-          contacts.push(id1, id2, 1)
-          contacts.push(point1.x, point1.y, point1.z)
-          contacts.push(point2.x, point2.y, point2.z)
+          contactStart.push(
+            id1,
+            id2,
+            point1.x,
+            point1.y,
+            point1.z,
+            point2.x,
+            point2.y,
+            point2.z
+          )
         }
       })
+    } else if (started) {
+      collisionStart.push(id1, id2)
     } else {
-      registered.push(id1, id2, started ? 1 : 0)
+      conllisionEnd.push(id1, id2)
     }
   })
 
-  const collisions = new Float32Array(registered)
-  const contactsBuffer = new Float32Array(contacts).buffer
+  const collisionStartArray = new Float32Array(contactStart)
+  const collisionEndArray = new Float32Array(conllisionEnd)
+  const contactStartArray = new Float32Array(contactStart)
 
   self.postMessage({
-    collisions: collisions.buffer,
-    contacts: contactsBuffer,
+    collisionEnd: collisionEndArray.buffer,
+    collisionStart: collisionStartArray.buffer,
+    contacts: contactStartArray.buffer,
     event: events.TRANSFORMS,
     transforms: transforms.buffer,
-  }, [collisions.buffer, contactsBuffer, transforms.buffer])
+  }, [
+    collisionEndArray.buffer,
+    collisionStartArray.buffer,
+    contactStartArray.buffer,
+    transforms.buffer,
+  ])
 }
 
 const debugTick = () => {
