@@ -57,12 +57,13 @@ module.exports = {
     'no-ternary': 'off',
     'no-undefined': 'off',
     'object-curly-spacing': ['error', 'always'],
+    'object-property-newline': ['error', { 'allowAllPropertiesOnSameLine': true }],
     'one-var': ['error', 'never'],
     'padded-blocks': ['error', 'never'],
     'prefer-destructuring': 'off',
     'quote-props': ['error', 'consistent-as-needed'],
     'quotes': ['error', 'single'],
     'semi': ['error', 'never'],
-    "@typescript-eslint/no-non-null-assertion": "off"
+    '@typescript-eslint/no-non-null-assertion': 'off'
   },
 }

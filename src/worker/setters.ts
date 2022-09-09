@@ -2,19 +2,11 @@ import { bodymap, collidermap } from './bodies'
 import type RAPIER from '@dimforge/rapier3d-compat'
 
 const resetAngularVelocity = (body: RAPIER.RigidBody) => {
-  body.setAngvel({
-    x: 0,
-    y: 0,
-    z: 0,
-  }, true)
+  body.setAngvel({ x: 0, y: 0, z: 0 }, true)
 }
 
 const resetLinearVelocity = (body: RAPIER.RigidBody) => {
-  body.setLinvel({
-    x: 0,
-    y: 0,
-    z: 0,
-  }, true)
+  body.setLinvel({ x: 0, y: 0, z: 0 }, true)
 }
 
 export const setActiveCollisionTypes = (id: number, types: number) => {

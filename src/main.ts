@@ -113,6 +113,7 @@ export const init = (x?: number, y?: number, z?: number) => {
     y,
     z,
   })
+
   return createPromise<undefined>(pid)
 }
 

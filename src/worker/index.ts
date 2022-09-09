@@ -28,16 +28,14 @@ let fps = 0
 let tickId = -1
 let debugTickId = -1
 
-const timestep = 1000 / 90
+const timestep = 1000 / Number.parseInt(import.meta.env.SWORD_FPS ?? '60', 10)
+const debugSlowdown = Number.parseFloat(import.meta.env.SWORD_DEBUG_SLOWDOWN ?? '3')
+const defaultGravity = Number.parseFloat(import.meta.env.DEFAULT_GRAVITY ?? '-9.8')
 
-const init = async (pid: number, x?: number, y?: number, z?: number) => {
+const init = async (pid: number, x = 0, y = defaultGravity, z = 0) => {
   await RAPIER.init()
 
-  world = new RAPIER.World({
-    x: x ?? 0,
-    y: y ?? -9.8,
-    z: z ?? 0,
-  })
+  world = new RAPIER.World({ x, y, z })
   world.timestep = timestep / 1000
 
   eventQueue = new RAPIER.EventQueue(true)
@@ -55,11 +53,13 @@ const tick = () => {
   fps = 1000 / (now - then)
   then = now
 
-  const transforms = new Float32Array(bodies.size * 8)
+  const transforms = new Float32Array(bodies.length * 8)
 
   let cursor = 0
 
-  for (const body of bodies) {
+  for (let i = 0, l = bodies.length; i < l; i += 1) {
+    const body = bodies[i]
+
     if (body.isSleeping()) {
       continue
     }
@@ -147,7 +147,7 @@ const run = (pid: number) => {
   })
 }
 
-const setDebugDraw = (on: boolean, slowdown = 3) => {
+const setDebugDraw = (on: boolean, slowdown = debugSlowdown) => {
   if (on) {
     debugTickId = self.setInterval(debugTick, timestep * slowdown)
   } else {
@@ -234,7 +234,7 @@ const createRigidBody = (
   }
 
   if (options.type === RigidBodyType.Dynamic) {
-    bodies.add(rigidBody)
+    bodies.push(rigidBody)
   }
 
   rigidBody.userData = transform.id
@@ -253,7 +253,7 @@ const createRigidBodies = (bodyOptions: RigidBodyWorkerOptions[]) => {
 }
 
 const destroyAllRigidBodies = (pid: number) => {
-  bodies.clear()
+  bodies.splice(0, bodies.length)
   bodymap.clear()
   collidermap.clear()
   handleMap.clear()
