@@ -1,16 +1,21 @@
 import * as THREE from 'three'
 
-const bodymap: Record<number, { instance: number; object: THREE.Object3D }> = {}
+const bodymap = new Map<number, { instance: number; object: THREE.Object3D }>()
 const bodies: THREE.Object3D[] = []
 const m4 = new THREE.Matrix4()
 const quat = new THREE.Quaternion()
 
+export const disposeAllBodies = () => {
+  bodymap.clear()
+  bodies.splice(0, bodies.length)
+}
+
 export const registerDynamicBody = (object: THREE.Object3D, id: number) => {
   bodies.push(object)
-  bodymap[id] = {
+  bodymap.set(id, {
     instance: -1,
     object,
-  }
+  })
 }
 
 export const registerInstancedDynamicBody = (
@@ -20,10 +25,10 @@ export const registerInstancedDynamicBody = (
   bodies.push(mesh)
 
   for (let i = 0, l = ids.length; i < l; i += 1) {
-    bodymap[ids[i]] = {
+    bodymap.set(ids[i], {
       instance: i,
       object: mesh,
-    }
+    })
   }
 }
 
@@ -33,7 +38,7 @@ export const updateDynamicBodies = (transforms: Float32Array) => {
       break
     }
 
-    const { instance, object } = bodymap[transforms[i]]
+    const { instance, object } = bodymap.get(transforms[i])!
 
     if (instance === -1) {
       object.position.set(

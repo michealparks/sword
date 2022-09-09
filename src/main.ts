@@ -1,10 +1,10 @@
 import { createPromise, createPromiseId, execPromise } from './lib'
+import { disposeAllBodies, updateDynamicBodies } from './lib/dynamic'
 import { emit } from './lib/events'
 import { events } from './constants/events'
 import { newBodies } from './lib/creators'
 import { update } from 'three-kit'
 import { updateDebugDrawer } from './debug/renderer'
-import { updateDynamicBodies } from './lib/dynamic'
 import { worker } from './lib/worker'
 
 export * from './lib/appliers'
@@ -105,6 +105,7 @@ const emitCollisionEvents = (collisions: Float32Array, contacts: Float32Array) =
  */
 export const init = (x?: number, y?: number, z?: number) => {
   const pid = createPromiseId()
+
   worker.postMessage({
     event: events.INIT,
     pid,
@@ -122,6 +123,7 @@ export const init = (x?: number, y?: number, z?: number) => {
  */
 export const run = () => {
   const pid = createPromiseId()
+
   worker.postMessage({
     event: events.RUN,
     pid,
@@ -137,6 +139,7 @@ export const run = () => {
  */
 export const pause = () => {
   const pid = createPromiseId()
+
   worker.postMessage({
     event: events.PAUSE,
     pid,
@@ -168,14 +171,17 @@ export const fps = () => {
  *
  * @returns A promise that resolves once all bodies are freed.
  */
-export const destroyAllRigidBodies = () => {
+export const destroyAllRigidBodies = async () => {
   const pid = createPromiseId()
-  // @TODO free bodies in this thread
+
   worker.postMessage({
     event: events.DESTROY_ALL_RIGIDBODIES,
     pid,
   })
-  return createPromise<undefined>(pid)
+
+  await createPromise<undefined>(pid)
+
+  disposeAllBodies()
 }
 
 const tick = () => {
