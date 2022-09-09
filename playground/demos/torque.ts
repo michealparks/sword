@@ -10,6 +10,7 @@ const matrix = new THREE.Matrix4()
 const color = new THREE.Color()
 
 const size = 15
+
 const random = () => {
   return Math.random() * size - (size / 2)
 }
@@ -34,7 +35,7 @@ const ids = sword.createRigidBodies(mesh, {
 
 sword.once('bodiesLoaded', () => {
   const impulses = new Float32Array(ids.length * 7)
-  
+
   const random = () => {
     return (Math.random() - 0.5) * 2
   }

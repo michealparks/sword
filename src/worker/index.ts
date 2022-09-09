@@ -20,7 +20,7 @@ import { events } from '../constants/events'
 import { getVelocities } from './getters'
 
 
-let world: RAPIER.World
+let world: RAPIER.World | undefined
 let eventQueue: RAPIER.EventQueue
 let now = 0
 let then = 0
@@ -49,10 +49,9 @@ const init = async (pid: number, x?: number, y?: number, z?: number) => {
 }
 
 const tick = () => {
-  world.step(eventQueue)
+  world!.step(eventQueue)
 
   now = performance.now()
-  dt = (now - then) / 1000
   fps = 1000 / (now - then)
   then = now
 
@@ -91,7 +90,7 @@ const tick = () => {
       const collider1 = collidermap.get(id1)!
       const collider2 = collidermap.get(id2)!
 
-      world.contactPair(collider1, collider2, (manifold, flipped) => {
+      world!.contactPair(collider1, collider2, (manifold, flipped) => {
         let point1 = manifold.localContactPoint1(0)
         let point2 = manifold.localContactPoint2(0)
 
@@ -102,7 +101,7 @@ const tick = () => {
             point2 = temp
           }
 
-          contacts.push(id1, id2, started ? 1 : 0)
+          contacts.push(id1, id2, 1)
           contacts.push(point1.x, point1.y, point1.z)
           contacts.push(point2.x, point2.y, point2.z)
         }
@@ -208,7 +207,7 @@ const createRigidBody = (
     .setCanSleep(options.canSleep)
     .setCcdEnabled(options.ccd)
 
-  const colliderDescription = createCollider(options)
+  const colliderDescription = createCollider(options)!
     .setDensity(options.density)
     .setFriction(0.2)
     .setFrictionCombineRule(RAPIER.CoefficientCombineRule.Max)
@@ -221,8 +220,8 @@ const createRigidBody = (
     colliderDescription.setCollisionGroups(mask)
   }
 
-  const rigidBody = world.createRigidBody(bodyDescription)
-  const collider = world.createCollider(colliderDescription, rigidBody)
+  const rigidBody = world!.createRigidBody(bodyDescription)
+  const collider = world!.createCollider(colliderDescription, rigidBody)
 
   if (options.events === ActiveEvents.CONTACT_EVENTS) {
     collider.setActiveEvents(RAPIER.ActiveEvents.COLLISION_EVENTS)
@@ -259,7 +258,7 @@ const destroyAllRigidBodies = (pid: number) => {
   collidermap.clear()
   handleMap.clear()
   reportContact.clear()
-  world.bodies.free()
+  world!.bodies.free()
 
   postMessage({
     event: events.DESTROY_ALL_RIGIDBODIES,
@@ -268,9 +267,9 @@ const destroyAllRigidBodies = (pid: number) => {
 }
 
 const setGravity = (x: number, y: number, z: number) => {
-  world.gravity.x = x
-  world.gravity.y = y
-  world.gravity.z = z
+  world!.gravity.x = x
+  world!.gravity.y = y
+  world!.gravity.z = z
 }
 
 self.addEventListener('message', (message) => {

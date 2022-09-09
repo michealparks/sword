@@ -21,37 +21,33 @@ export { RigidBodyType } from './constants/rigidbody'
 export { ActiveEvents } from './constants/active-events'
 export { ActiveCollisionTypes } from '@dimforge/rapier3d-compat'
 
-type Listener = (...args: any) => void
+type Listener = (...args: unknown[]) => void
 type Events = 'start' | 'end'
 
-const eventmap = new Map<Events, Map<number, Listener[]>>()
-eventmap.set('start', new Map())
-eventmap.set('end', new Map())
+const eventmap = new Map<string, Listener[]>()
 
 let currentFps = 0
 let isRunning = false
 
 export const onCollision = (event: 'start' | 'end', id: number, callback: Listener) => {
-  const type = eventmap.get(event)!
-  const result = type.get(id)
+  const channel = eventmap.get(`${event}${id}`)
 
-  if (result === undefined) {
-    type.set(id, [callback])
+  if (channel === undefined) {
+    eventmap.set(`${event}${id}`, [callback])
   } else {
-    result.push(callback)
+    channel.push(callback)
   }
 }
 
 const emitCollision = (name: Events, id: number, data?: unknown) => {
-  const type = eventmap.get(name)!
-  const callbacks = type.get(id)
+  const channel = eventmap.get(`${name}${id}`)
 
-  if (callbacks === undefined) {
+  if (channel === undefined) {
     return
   }
 
-  for (let i = 0, l = callbacks.length; i < l; i += 1) {
-    callbacks[i](data)
+  for (let i = 0, l = channel.length; i < l; i += 1) {
+    channel[i](data)
   }
 }
 
@@ -60,15 +56,14 @@ const emitContact = (
   p1x: number, p1y: number, p1z: number,
   p2x: number, p2y: number, p2z: number
 ) => {
-  const type = eventmap.get(name)!
-  const callbacks = type.get(id)
+  const channel = eventmap.get(`${name}${id}`)
 
-  if (callbacks === undefined) {
+  if (channel === undefined) {
     return
   }
 
-  for (let i = 0, l = callbacks.length; i < l; i += 1) {
-    callbacks[i](id2, p1x, p1y, p1z, p2x, p2y, p2z)
+  for (let i = 0, l = channel.length; i < l; i += 1) {
+    channel[i](id2, p1x, p1y, p1z, p2x, p2y, p2z)
   }
 }
 
@@ -87,9 +82,15 @@ const emitCollisionEvents = (collisions: Float32Array, contacts: Float32Array) =
     const start = contacts[i + 2] === 1
 
     emitContact(
-      start ? 'start' : 'end', id1, id2,
-      contacts[i + 3], contacts[i + 4], contacts[i + 5],
-      contacts[i + 6], contacts[i + 7], contacts[i + 8]
+      start ? 'start' : 'end',
+      id1,
+      id2,
+      contacts[i + 3],
+      contacts[i + 4],
+      contacts[i + 5],
+      contacts[i + 6],
+      contacts[i + 7],
+      contacts[i + 8]
     )
   }
 }

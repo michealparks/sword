@@ -28,8 +28,8 @@ export const setGravity = (x: number, y: number, z: number) => {
 }
 
 /**
- * 
- * @param transforms 
+ *
+ * @param transforms
  */
 export const setNextKinematicTransforms = (transforms: Float32Array) => {
   worker.postMessage({
@@ -70,7 +70,7 @@ export const setTransformsAndVelocities = (array: Float32Array) => {
   worker.postMessage({
     buffer: array.buffer,
     event: events.SET_TRANSFORMS_AND_VELOCITIES,
-  })
+  }, [array.buffer])
 }
 
 export const setVelocities = (velocities: Float32Array) => {

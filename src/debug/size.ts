@@ -1,6 +1,6 @@
-export const roughSizeOfObject = (object: any) => {
-  const objectList: any[] = []
-  const stack = [object]
+export const roughSizeOfObject = (object: unknown) => {
+  const objectList: unknown[] = []
+  const stack: unknown[] = [object]
   let bytes = 0
 
   while (stack.length) {
@@ -21,6 +21,7 @@ export const roughSizeOfObject = (object: any) => {
 
       for (const key in value) {
         if (Object.hasOwn(value, key)) {
+          // @ts-expect-error We don't care lol
           stack.push(value[key])
         }
       }

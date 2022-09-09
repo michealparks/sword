@@ -1,8 +1,8 @@
 type Listener = (args: unknown) => void
 type Events = 'bodiesLoaded'
 
-const events = new Map<string, Set<Listener>>()
-events.set('bodiesLoaded', new Set())
+const events = new Map<string, Listener[]>()
+events.set('bodiesLoaded', [])
 
 /**
  * Registers an event listener.
@@ -11,11 +11,12 @@ events.set('bodiesLoaded', new Set())
  * @param listener A callback that fires when the event is triggered.
  */
 export const on = (event: Events, listener: Listener) => {
-  events.get(event)!.add(listener)
+  events.get(event)!.push(listener)
 }
 
 export const off = (event: Events, listener: Listener) => {
-  events.get(event)!.delete(listener)
+  const channel = events.get(event)!
+  channel.splice(channel.indexOf(listener), 1)
 }
 
 export const once = (event: Events, listener: Listener) => {
@@ -23,13 +24,14 @@ export const once = (event: Events, listener: Listener) => {
     listener(data)
     off(event, fn)
   }
-  events.get(event)!.add(fn)
+
+  events.get(event)!.push(fn)
 }
 
 export const emit = (event: Events, data?: unknown) => {
-  const listeners = events.get(event)!
+  const channel = events.get(event)!
 
-  for (const listener of listeners) {
-    listener(data)
+  for (let i = 0, l = channel.length; i < l; i += 1) {
+    channel[i](data)
   }
 }

@@ -18,6 +18,7 @@ export const registerInstancedDynamicBody = (
   ids: number[]
 ) => {
   bodies.push(mesh)
+
   for (let i = 0, l = ids.length; i < l; i += 1) {
     bodymap[ids[i]] = {
       instance: i,
@@ -75,6 +76,7 @@ export const dynamicCount = () => {
 
   for (let i = 0, l = bodies.length; i < l; i += 1) {
     const body = bodies[i]
+
     if (body instanceof THREE.InstancedMesh) {
       num += body.count
     } else {

@@ -1,4 +1,3 @@
-
 import * as debug from 'three-kit/debug'
 import * as sword from '../main'
 import { setDebugDraw } from './renderer'
@@ -19,7 +18,7 @@ pane.addInput(params, 'debugDraw').on('change', () => {
   debug.save('physicsDebugDraw', params.debugDraw)
 })
 
-const monitors: any[] = []
+const monitors: unknown[] = []
 
 const folder = debug.addFolder(debug.stats, 'physics')
 monitors.push(folder.addMonitor(params, 'fps', {

@@ -3,9 +3,8 @@
 /**
  * Collision groups for filtering.
  */
- export const enum Groups {
+export const enum Groups {
   BODYGROUP_NONE = 0,
-  BODYGROUP_DEFAULT = 1,
   BODYGROUP_DYNAMIC = 1,
   BODYGROUP_STATIC = 2,
   BODYGROUP_KINEMATIC = 4,
