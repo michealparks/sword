@@ -1,4 +1,5 @@
 import { createPromise, createPromiseId } from '.'
+import type RAPIER from '@dimforge/rapier3d-compat'
 import { events } from '../constants/events'
 import { worker } from './worker'
 
@@ -11,7 +12,7 @@ export const getVelocity = (id: number) => {
     pid,
   })
 
-  return createPromise<{ x: number, y: number, z: number }>(pid)
+  return createPromise<{ angvel: RAPIER.Vector3, linvel: RAPIER.Vector3 }>(pid)
 }
 
 export const getVelocities = (ids: Uint16Array) => {
