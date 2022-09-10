@@ -93,7 +93,7 @@ export const setTransforms = (ids: Uint16Array, transforms: Float32Array) => {
 
 export const setTransformAndVelocity = (
   id: number,
-  transform: { x: number; y: number; z: number },
+  translation: { x: number; y: number; z: number },
   rotation: { w: number; x: number; y: number; z: number },
   linvel: { x: number; y: number; z: number },
   angvel: { x: number; y: number; z: number }
@@ -104,7 +104,7 @@ export const setTransformAndVelocity = (
     id,
     linvel,
     rotation,
-    transform,
+    translation,
   })
 }
 
