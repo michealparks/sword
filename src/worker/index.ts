@@ -3,18 +3,18 @@ import {
 } from './appliers'
 
 import { bodies, bodymap, collidermap, handlemap, reportContact } from './bodies'
+import { getVelocities, getVelocity } from './getters'
 import {
   setActiveCollisionTypes,
   setNextKinematicTransform,
   setNextKinematicTransforms,
   setTransforms,
   setTransformsAndVelocities,
+  setTranslation,
   setTranslations,
   setVelocities
 } from './setters'
-
 import { ActiveEvents } from '../constants/active-events'
-
 import RAPIER from '@dimforge/rapier3d-compat'
 import { RigidBodyType } from '../constants/rigidbody'
 import type { RigidBodyWorkerOptions } from '../types/internal'
@@ -22,7 +22,7 @@ import { bitmask } from '../lib/bitmask'
 import { createBodyId } from './utils'
 import { createCollider } from './colliders'
 import { events } from '../constants/events'
-import { getVelocities } from './getters'
+
 
 let world: RAPIER.World | undefined
 let eventQueue: RAPIER.EventQueue
@@ -64,10 +64,6 @@ const tick = () => {
 
   for (let i = 0, l = bodies.length; i < l; i += 1) {
     const body = bodies[i]
-
-    // if (body.isSleeping()) {
-    //   continue
-    // }
 
     const id = body.userData as number
     ids[i] = id
@@ -334,6 +330,8 @@ self.addEventListener('message', (message) => {
     return applyTorqueImpulses(data.ids, data.impulses)
   case events.APPLY_LINEAR_AND_TORQUE_IMPULSES:
     return applyLinearAndTorqueImpulses(data.ids, data.impulses)
+  case events.GET_VELOCITY:
+    return getVelocity(data.id, data.pid)
   case events.GET_VELOCITIES:
     return getVelocities(data.ids, data.pid)
   case events.SET_ACTIVE_COLLISION_TYPES:
@@ -344,6 +342,8 @@ self.addEventListener('message', (message) => {
     return setNextKinematicTransform(data)
   case events.SET_NEXT_KINEMATIC_TRANSFORMS:
     return setNextKinematicTransforms(data.ids, data.transforms)
+  case events.SET_TRANSLATION:
+    return setTranslation(data.id, data.translation, data.resetAngvel, data.resetLinvel)
   case events.SET_TRANSLATIONS:
     return setTranslations(
       data.ids,

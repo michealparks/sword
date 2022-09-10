@@ -53,6 +53,21 @@ export const setNextKinematicTransforms = (
   }, [ids.buffer, transforms.buffer])
 }
 
+export const setTranslation = (
+  id: number,
+  translation: { x: number, y: number, z: number },
+  resetAngvel: boolean,
+  resetLinvel: boolean
+) => {
+  worker.postMessage({
+    event: events.SET_TRANSLATION,
+    id,
+    resetAngvel,
+    resetLinvel,
+    translation,
+  })
+}
+
 export const setTranslations = (
   ids: Uint16Array,
   translations: Float32Array,

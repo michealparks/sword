@@ -36,6 +36,7 @@ module.exports = {
       objects: 'always-multiline',
     }],
     'consistent-return': 'off',
+    'complexity': ['error', 40],
     'default-case': 'off',
     'dot-location': ['error', 'property'],
     'function-call-argument-newline': ['error', 'consistent'],

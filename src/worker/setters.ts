@@ -119,6 +119,24 @@ export const setTransformsAndVelocities = (ids: Uint16Array, array: Float32Array
   }
 }
 
+export const setTranslation = (
+  id: number,
+  translation: { x: number, y: number, z: number },
+  resetAngvel: boolean,
+  resetLinvel: boolean
+) => {
+  const body = bodymap.get(id)!
+  body.setTranslation(translation, true)
+
+  if (resetAngvel) {
+    resetAngularVelocity(body)
+  }
+
+  if (resetLinvel) {
+    resetLinearVelocity(body)
+  }
+}
+
 export const setTranslations = (
   ids: Uint16Array,
   translations: Float32Array,

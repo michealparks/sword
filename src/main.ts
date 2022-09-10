@@ -214,6 +214,8 @@ worker.addEventListener('message', (message) => {
     return updateDynamicBodies(data.ids, data.transforms)
   case events.CREATE_RIGIDBODIES:
     return execPromise(data.pid, data.ids)
+  case events.GET_VELOCITY:
+    return execPromise(data.pid, { angvel: data.angvel, linvel: data.linvel })
   case events.GET_VELOCITIES:
     return execPromise(data.pid, data.velocities)
   default:
