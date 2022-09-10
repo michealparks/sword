@@ -1,10 +1,18 @@
 import {
-  applyImpulses, applyLinearAndTorqueImpulses, applyTorqueImpulses
+  applyImpulses,
+  applyLinearAndTorqueImpulses,
+  applyTorqueImpulses
 } from './appliers'
-
-import { bodies, bodymap, collidermap, handlemap, reportContact } from './bodies'
-import { getVelocities, getVelocity } from './getters'
 import {
+  bodies,
+  bodymap,
+  collidermap,
+  disabledmap,
+  handlemap,
+  reportContact
+} from './bodies'
+import {
+  disableBody,
   setActiveCollisionTypes,
   setNextKinematicTransform,
   setNextKinematicTransforms,
@@ -15,6 +23,7 @@ import {
   setTranslations,
   setVelocities
 } from './setters'
+import { getVelocities, getVelocity } from './getters'
 import { ActiveEvents } from '../constants/active-events'
 import RAPIER from '@dimforge/rapier3d-compat'
 import { RigidBodyType } from '../constants/rigidbody'
@@ -23,7 +32,6 @@ import { bitmask } from '../lib/bitmask'
 import { createBodyId } from './utils'
 import { createCollider } from './colliders'
 import { events } from '../constants/events'
-
 
 let world: RAPIER.World | undefined
 let eventQueue: RAPIER.EventQueue
@@ -36,6 +44,8 @@ let debugTickId = -1
 const timestep = 1000 / Number.parseInt(import.meta.env.SWORD_FPS ?? '60', 10)
 const debugSlowdown = Number.parseFloat(import.meta.env.SWORD_DEBUG_SLOWDOWN ?? '3')
 const defaultGravity = Number.parseFloat(import.meta.env.DEFAULT_GRAVITY ?? '-9.8')
+const defaultFriction = Number.parseFloat(import.meta.env.SWORD_DEFAULT_FRICTION ?? '0.2')
+const defaultRestitution = Number.parseFloat(import.meta.env.SWORD_DEFAULT_RESTITUTION ?? '0.5')
 
 const init = async (pid: number, x = 0, y = defaultGravity, z = 0) => {
   await RAPIER.init()
@@ -58,30 +68,33 @@ const tick = () => {
   fps = 1000 / (now - then)
   then = now
 
-  const ids = new Uint16Array(bodies.length)
-  const transforms = new Float32Array(bodies.length * 7)
-
-  let cursor = 0
+  const ids = []
+  const transforms = []
 
   for (let i = 0, l = bodies.length; i < l; i += 1) {
     const body = bodies[i]
 
-    const id = body.userData as number
-    ids[i] = id
+    if (body.isSleeping()) {
+      continue
+    }
+
+    ids.push(body.userData as number)
 
     const translation = body.translation()
     const rotation = body.rotation()
-    transforms[cursor + 0] = translation.x
-    transforms[cursor + 1] = translation.y
-    transforms[cursor + 2] = translation.z
-    transforms[cursor + 3] = rotation.x
-    transforms[cursor + 4] = rotation.y
-    transforms[cursor + 5] = rotation.z
-    transforms[cursor + 6] = rotation.w
-    cursor += 7
+    transforms.push(
+      translation.x,
+      translation.y,
+      translation.z,
+      rotation.x,
+      rotation.y,
+      rotation.z,
+      rotation.w
+    )
   }
 
-  transforms[cursor] = -1
+  const idsArray = new Uint16Array(ids)
+  const transformsArray = new Float32Array(transforms)
 
   const collisionStart: number[] = []
   const conllisionEnd: number[] = []
@@ -134,14 +147,14 @@ const tick = () => {
     collisionStart: collisionStartArray,
     contactStart: contactStartArray,
     event: events.TRANSFORMS,
-    ids,
-    transforms,
+    ids: idsArray,
+    transforms: transformsArray,
   }, [
     collisionEndArray.buffer,
     collisionStartArray.buffer,
     contactStartArray.buffer,
-    ids.buffer,
-    transforms.buffer,
+    idsArray.buffer,
+    transformsArray.buffer,
   ])
 }
 
@@ -215,23 +228,17 @@ const createMask = (groups: number[] = [], filter: number[] = []) => {
   return bitmask.create(bits)
 }
 
-const createRigidBody = (
-  x: number, y: number, z: number,
-  qx: number, qy: number, qz: number, qw: number,
-  options: RigidBodyWorkerOptions
-) => {
+const createRigidBody = (options: RigidBodyWorkerOptions) => {
   const id = createBodyId()
   const bodyDescription = new RAPIER.RigidBodyDesc(mapType(options.type))
-    .setTranslation(x, y, z)
-    .setRotation({ w: qw, x: qx, y: qy, z: qz })
     .setCanSleep(options.canSleep)
     .setCcdEnabled(options.ccd)
 
   const colliderDescription = createCollider(options)!
     .setDensity(options.density)
-    .setFriction(0.2)
+    .setFriction(defaultFriction)
     .setFrictionCombineRule(RAPIER.CoefficientCombineRule.Max)
-    .setRestitution(0.5)
+    .setRestitution(defaultRestitution)
     .setRestitutionCombineRule(RAPIER.CoefficientCombineRule.Max)
     .setSensor(options.type === RigidBodyType.Sensor)
 
@@ -262,7 +269,7 @@ const createRigidBody = (
   collidermap.set(id, collider)
   handlemap.set(rigidBody.handle, id)
 
-  return id
+  return rigidBody
 }
 
 const createRigidBodies = (options: RigidBodyWorkerOptions & { pid: number }) => {
@@ -271,16 +278,29 @@ const createRigidBodies = (options: RigidBodyWorkerOptions & { pid: number }) =>
   const ids = new Uint16Array(count)
 
   for (let i = 0, j = 0; i < count; i += 1, j += 7) {
-    ids[i] = createRigidBody(
-      instances[j + 0],
-      instances[j + 1],
-      instances[j + 2],
-      instances[j + 3],
-      instances[j + 4],
-      instances[j + 5],
-      instances[j + 6],
-      options
-    )
+    const rigidBody = createRigidBody(options)
+    const id = rigidBody.userData as number
+    ids[i] = id
+
+    if (options.disabled) {
+      rigidBody.setTranslation({
+        x: 0,
+        y: -2000 + (id * ((options.collider1 ?? -10) - 10)),
+        z: 0,
+      }, false)
+    } else {
+      rigidBody.setTranslation({
+        x: instances[j + 0],
+        y: instances[j + 1],
+        z: instances[j + 2],
+      }, false)
+      rigidBody.setRotation({
+        w: instances[j + 3],
+        x: instances[j + 4],
+        y: instances[j + 5],
+        z: instances[j + 6],
+      }, false)
+    }
   }
 
   self.postMessage({
@@ -325,6 +345,8 @@ self.addEventListener('message', (message) => {
     return createRigidBodies(data)
   case events.DESTROY_ALL_RIGIDBODIES:
     return destroyAllRigidBodies(data.pid)
+  case events.DISABLE_BODY:
+    return disableBody(data.id)
   case events.APPLY_IMPULSES:
     return applyImpulses(data.ids, data.impulses)
   case events.APPLY_TORQUE_IMPULSES:
@@ -346,12 +368,7 @@ self.addEventListener('message', (message) => {
   case events.SET_TRANSLATION:
     return setTranslation(data.id, data.translation, data.resetAngvel, data.resetLinvel)
   case events.SET_TRANSLATIONS:
-    return setTranslations(
-      data.ids,
-      data.translations,
-      data.resetAngvel,
-      data.resetLinvel
-    )
+    return setTranslations(data.ids, data.translations, data.resetAngvel, data.resetLinvel)
   case events.SET_TRANSFORMS:
     return setTransforms(data.ids, data.transforms)
   case events.SET_TRANSFORM_AND_VELOCITY:

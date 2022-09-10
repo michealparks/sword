@@ -45,7 +45,7 @@ module.exports = {
     'init-declarations': 'off',
     'linebreak-style': ['error', 'unix'],
     'lines-around-comment': 'off',
-    'max-len': ['error', { code: 90 }],
+    'max-len': ['error', { code: 100 }],
     'max-lines': 'off',
     'max-lines-per-function': 'off',
     'max-params': 'off',

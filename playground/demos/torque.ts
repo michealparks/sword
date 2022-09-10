@@ -3,6 +3,7 @@ import * as constants from '../constants'
 import * as sword from '../../src/main'
 import { randomColor } from './lib/colors'
 import { mesh, radius } from './lib/spheres'
+import { addKeyEvents } from '../lib/key-events'
 
 sword.setGravity(0, 0, 0)
 
@@ -25,10 +26,11 @@ for (let index = 0; index < constants.NUM_MESHES; index += 1) {
 mesh.instanceColor!.needsUpdate = true
 
 const ids = await sword.createRigidBodies(mesh, {
+  canSleep: false,
+  disabled: true,
   type: sword.RigidBodyType.Dynamic,
   collider: sword.ColliderType.Ball,
   radius,
-  canSleep: false,
   filter: [0, 1],
   groups: [1],
 })
@@ -36,17 +38,18 @@ const ids = await sword.createRigidBodies(mesh, {
 const impulses = new Float32Array(ids.length * 6)
 
 const random2 = () => {
-  return (Math.random() - 0.5) * 2
+  return (Math.random() - 0.5) * 0.2
 }
 
 for (let i = 0, j = 0, l = ids.length; i < l; i += 1, j += 6) {
   impulses[j + 0] = random2()
   impulses[j + 1] = random2()
   impulses[j + 2] = random2()
-  impulses[j + 3] = random2()
-  impulses[j + 4] = random2()
-  impulses[j + 5] = random2()
+  impulses[j + 3] = random2() * 0.1
+  impulses[j + 4] = random2() * 0.1
+  impulses[j + 5] = random2() * 0.1
 }
 
-sword.applyLinearAndTorqueImpulses(ids, impulses)
+sword.applyLinearAndTorqueImpulses(new Uint16Array(ids), impulses)
 
+addKeyEvents(ids)

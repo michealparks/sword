@@ -24,7 +24,6 @@ for (let index = 0; index < constants.NUM_MESHES; index += 1) {
 mesh.instanceColor!.needsUpdate = true
 
 const ids = await sword.createRigidBodies(mesh, {
-  canSleep: false,
   type: sword.RigidBodyType.Dynamic,
   collider: sword.ColliderType.Ball,
   groups: [2],

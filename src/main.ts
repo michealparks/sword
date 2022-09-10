@@ -152,7 +152,9 @@ export const pause = () => {
     event: events.PAUSE,
     pid,
   })
+
   isRunning = false
+
   return createPromise<undefined>(pid)
 }
 
@@ -204,6 +206,8 @@ worker.addEventListener('message', (message) => {
     currentFps = data.fps
     return undefined
   case events.RUN:
+    return execPromise(data.pid)
+  case events.PAUSE:
     return execPromise(data.pid)
   case events.TRANSFORMS:
     emitCollisionEvents(

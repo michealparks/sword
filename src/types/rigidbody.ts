@@ -23,6 +23,7 @@ export interface RigidBodyOptions {
   canSleep?: boolean
   ccd?: boolean
   density?: number
+  disabled?: boolean
   events?: ActiveEvents
   filter?: number[]
   groups?: number[]

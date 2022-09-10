@@ -4,7 +4,6 @@ import '../src/debug'
 import * as THREE from 'three'
 import { scene, run, lights, camera, update } from 'three-kit'
 import * as sword from '../src/main'
-import { addKeyEvents } from './lib/key-events'
 
 const demos = import.meta.glob('./demos/*.ts')
 
@@ -94,6 +93,5 @@ directionalLight.shadow.camera.far = 20
 const savedDemo = window.localStorage.getItem('demo') || 'boxes'
 await demos[`./demos/${savedDemo}.ts`]()
 
-addKeyEvents()
 run()
 sword.run()

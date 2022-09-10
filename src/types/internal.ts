@@ -6,6 +6,7 @@ interface WorkerOptions {
   ccd: boolean
   events: number
   density: number
+  disabled?: boolean
   filter?: number[]
   groups?: number[]
   instances: Float32Array

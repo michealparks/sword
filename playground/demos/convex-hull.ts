@@ -3,6 +3,7 @@ import * as constants from '../constants'
 import * as sword from '../../src/main'
 import { scene, assets } from 'three-kit'
 import { NUM_MESHES } from '../constants'
+import { addKeyEvents } from '../lib/key-events'
 
 type GLTF = { scene: THREE.Scene }
 
@@ -31,8 +32,11 @@ for (let index = 0; index < constants.NUM_MESHES; index += 1) {
   mesh.setMatrixAt(index, matrix)
 }
 
-await sword.createRigidBodies(mesh, {
+const ids = await sword.createRigidBodies(mesh, {
   type: sword.RigidBodyType.Dynamic,
   collider: sword.ColliderType.ConvexHull,
   vertices,
+  density: 5,
 })
+
+addKeyEvents(ids, 0.1)

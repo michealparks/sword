@@ -9,6 +9,13 @@ const resetLinearVelocity = (body: RAPIER.RigidBody) => {
   body.setLinvel({ x: 0, y: 0, z: 0 }, true)
 }
 
+export const disableBody = (id: number) => {
+  const body = bodymap.get(id)!
+  body.setLinvel({ x: 0, y: 0, z: 0 }, false)
+  body.setAngvel({ x: 0, y: 0, z: 0 }, false)
+  body.setTranslation({ x: 0, y: 1050 + (id * 4), z: 0 }, false)
+}
+
 export const setActiveCollisionTypes = (id: number, types: number) => {
   collidermap.get(id)!.setActiveCollisionTypes(types)
 }

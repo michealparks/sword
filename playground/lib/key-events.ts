@@ -1,25 +1,27 @@
 import * as sword from '../../src/main'
 
-export const addKeyEvents = () => {
+export const addKeyEvents = (ids: Uint16Array, magnitude = 5) => {
   // Add event for random impulses
   document.addEventListener('keydown', (event) => {
     switch (event.key.toLowerCase()) {
     case 'i':
-      const count = sword.dynamicCount()
-      const magnitude = 5
+      const impulses = new Float32Array(ids.length * 3)
 
-      const ids = new Uint16Array(count)
-      const impulses = new Float32Array(count * 4)
-
-      for (let i = 0, j = 0; j < count; i += 3, j += 1) {
-        ids[j] = j
-        impulses[i + 0] = (Math.random() - 0.5) * magnitude
-        impulses[i + 1] = (Math.random() - 0.5) * magnitude
-        impulses[i + 2] = (Math.random() - 0.5) * magnitude
+      for (let i = 0, j = 0, l = ids.length; i < l; i += 1, j += 3) {
+        impulses[j + 0] = (Math.random() - 0.5) * magnitude
+        impulses[j + 1] = (Math.random() - 0.5) * magnitude
+        impulses[j + 2] = (Math.random() - 0.5) * magnitude
       }
 
-      sword.applyImpulses(ids, impulses)
+      sword.applyImpulses(new Uint16Array(ids), impulses)
       break
+
+    case 'd':
+      for (let i = 0, l = ids.length; i < l / 2; i += 1) {
+        sword.disableBody(ids[i])
+      }
+      break
+
     case 'p':
       if (sword.running()) {
         sword.pause()

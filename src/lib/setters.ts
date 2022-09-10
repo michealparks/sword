@@ -1,6 +1,13 @@
 import { events } from '../constants/events'
 import { worker } from './worker'
 
+export const disableBody = (id: number) => {
+  worker.postMessage({
+    event: events.DISABLE_BODY,
+    id,
+  })
+}
+
 export const setActiveCollisionTypes = (id: number, types: number) => {
   worker.postMessage({
     event: events.SET_ACTIVE_COLLISION_TYPES,

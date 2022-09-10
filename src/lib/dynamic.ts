@@ -33,37 +33,33 @@ export const registerInstancedDynamicBody = (
 }
 
 export const updateDynamicBodies = (ids: Uint16Array, transforms: Float32Array) => {
-  for (let i = 0, j = 0, l = transforms.length; i < l; i += 7, j += 1) {
-    if (transforms[i] === -1) {
-      break
-    }
-
-    const { instance, object } = bodymap.get(ids[j])!
+  for (let i = 0, j = 0, l = ids.length; i < l; i += 1, j += 7) {
+    const { instance, object } = bodymap.get(ids[i])!
 
     if (instance === -1) {
-      object.position.set(
-        transforms[i + 0],
-        transforms[i + 1],
-        transforms[i + 2]
-      )
       object.quaternion.set(
-        transforms[i + 3],
-        transforms[i + 4],
-        transforms[i + 5],
-        transforms[i + 6]
+        transforms[j + 3],
+        transforms[j + 4],
+        transforms[j + 5],
+        transforms[j + 6]
+      )
+      object.position.set(
+        transforms[j + 0],
+        transforms[j + 1],
+        transforms[j + 2]
       )
     } else if (object instanceof THREE.InstancedMesh) {
       quat.set(
-        transforms[i + 3],
-        transforms[i + 4],
-        transforms[i + 5],
-        transforms[i + 6]
+        transforms[j + 3],
+        transforms[j + 4],
+        transforms[j + 5],
+        transforms[j + 6]
       )
       m4.makeRotationFromQuaternion(quat)
       m4.setPosition(
-        transforms[i + 0],
-        transforms[i + 1],
-        transforms[i + 2]
+        transforms[j + 0],
+        transforms[j + 1],
+        transforms[j + 2]
       )
       object.setMatrixAt(instance, m4)
       object.instanceMatrix.needsUpdate = true
