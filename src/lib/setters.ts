@@ -91,6 +91,23 @@ export const setTransforms = (ids: Uint16Array, transforms: Float32Array) => {
   }, [ids.buffer, transforms.buffer])
 }
 
+export const setTransformAndVelocity = (
+  id: number,
+  transform: { x: number; y: number; z: number },
+  rotation: { w: number; x: number; y: number; z: number },
+  linvel: { x: number; y: number; z: number },
+  angvel: { x: number; y: number; z: number }
+) => {
+  worker.postMessage({
+    angvel,
+    event: events.SET_TRANSFORM_AND_VELOCITY,
+    id,
+    linvel,
+    rotation,
+    transform,
+  })
+}
+
 export const setTransformsAndVelocities = (ids: Uint16Array, array: Float32Array) => {
   worker.postMessage({
     array,

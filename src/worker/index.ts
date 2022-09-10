@@ -8,6 +8,7 @@ import {
   setActiveCollisionTypes,
   setNextKinematicTransform,
   setNextKinematicTransforms,
+  setTransformAndVelocity,
   setTransforms,
   setTransformsAndVelocities,
   setTranslation,
@@ -353,6 +354,14 @@ self.addEventListener('message', (message) => {
     )
   case events.SET_TRANSFORMS:
     return setTransforms(data.ids, data.transforms)
+  case events.SET_TRANSFORM_AND_VELOCITY:
+    return setTransformAndVelocity(
+      data.id,
+      data.translation,
+      data.rotation,
+      data.linvel,
+      data.angvel
+    )
   case events.SET_TRANSFORMS_AND_VELOCITIES:
     return setTransformsAndVelocities(data.ids, data.array)
   case events.SET_VELOCITIES:

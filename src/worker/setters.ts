@@ -88,6 +88,20 @@ export const setVelocities = (ids: Uint16Array, velocities: Float32Array) => {
   }
 }
 
+export const setTransformAndVelocity = (
+  id: number,
+  translation: RAPIER.Vector,
+  rotation: RAPIER.Rotation,
+  linvel: RAPIER.Vector,
+  angvel: RAPIER.Vector
+) => {
+  const body = bodymap.get(id)!
+  body.setTranslation(translation, false)
+  body.setRotation(rotation, false)
+  body.setLinvel(linvel, false)
+  body.setAngvel(angvel, true)
+}
+
 export const setTransformsAndVelocities = (ids: Uint16Array, array: Float32Array) => {
   for (let i = 0, j = 0, l = ids.length; i < l; i += 1, j += 13) {
     const body = bodymap.get(ids[i])!
