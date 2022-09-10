@@ -2,7 +2,7 @@ import { createPromise, createPromiseId } from '.'
 import { events } from '../constants/events'
 import { worker } from './worker'
 
-export const getVelocities = (ids: Float32Array) => {
+export const getVelocities = (ids: Uint16Array) => {
   const pid = createPromiseId()
 
   worker.postMessage({

@@ -1,39 +1,42 @@
 import { bodymap } from './bodies'
 
-export const applyImpulses = (impulses: Float32Array) => {
-  for (let i = 0, l = impulses.length; i < l; i += 4) {
-    bodymap.get(impulses[i])!.applyImpulse({
-      x: impulses[i + 1],
-      y: impulses[i + 2],
-      z: impulses[i + 3],
+export const applyImpulses = (ids: Uint16Array, impulses: Float32Array) => {
+  for (let i = 0, j = 0, l = ids.length; i < l; i += 1, j += 3) {
+    bodymap.get(ids[i])!.applyImpulse({
+      x: impulses[j + 0],
+      y: impulses[j + 1],
+      z: impulses[j + 2],
     }, true)
   }
 }
 
-export const applyLinearAndTorqueImpulses = (impulses: Float32Array) => {
-  for (let i = 0, l = impulses.length; i < l; i += 7) {
-    const body = bodymap.get(impulses[i])!
+export const applyLinearAndTorqueImpulses = (
+  ids: Uint16Array,
+  impulses: Float32Array
+) => {
+  for (let i = 0, j = 0, l = ids.length; i < l; i += 1, j += 6) {
+    const body = bodymap.get(ids[i])!
 
     body.applyImpulse({
-      x: impulses[i + 1],
-      y: impulses[i + 2],
-      z: impulses[i + 3],
+      x: impulses[j + 0],
+      y: impulses[j + 1],
+      z: impulses[j + 2],
     }, false)
 
     body.applyTorqueImpulse({
-      x: impulses[i + 4],
-      y: impulses[i + 5],
-      z: impulses[i + 6],
+      x: impulses[j + 3],
+      y: impulses[j + 4],
+      z: impulses[j + 5],
     }, true)
   }
 }
 
-export const applyTorqueImpulses = (impulses: Float32Array) => {
-  for (let i = 0, l = impulses.length; i < l; i += 4) {
-    bodymap.get(impulses[i])!.applyTorqueImpulse({
-      x: impulses[i + 1],
-      y: impulses[i + 2],
-      z: impulses[i + 3],
+export const applyTorqueImpulses = (ids: Uint16Array, impulses: Float32Array) => {
+  for (let i = 0, j = 0, l = ids.length; i < l; i += 1, j += 3) {
+    bodymap.get(ids[i])!.applyTorqueImpulse({
+      x: impulses[j + 0],
+      y: impulses[j + 1],
+      z: impulses[j + 2],
     }, true)
   }
 }

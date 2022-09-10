@@ -1,8 +1,7 @@
 type Listener = (args: unknown) => void
-type Events = 'bodiesLoaded'
+type Events = ''
 
 const events = new Map<string, Listener[]>()
-events.set('bodiesLoaded', [])
 
 /**
  * Registers an event listener.

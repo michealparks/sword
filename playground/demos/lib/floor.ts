@@ -14,7 +14,7 @@ floor.name = 'floor'
 floor.receiveShadow = true
 scene.add(floor)
 
-sword.createRigidBody(floor, {
+await sword.createRigidBody(floor, {
   ccd: true,
   type: sword.RigidBodyType.Fixed,
   collider: sword.ColliderType.Cuboid,

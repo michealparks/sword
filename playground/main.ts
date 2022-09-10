@@ -39,7 +39,7 @@ directionalLight.shadow.camera.far = 20
   const radius = 50
   const object = new THREE.Object3D()
 
-  const id = sword.createRigidBody(object, {
+  const id = await sword.createRigidBody(object, {
     collider: sword.ColliderType.Ball,
     type: sword.RigidBodyType.Sensor,
     events: sword.ActiveEvents.COLLISION_EVENTS,
@@ -57,18 +57,18 @@ directionalLight.shadow.camera.far = 20
       return
     }
  
-    const translations = new Float32Array(pendingTeleports.length * 4)
+    const ids = new Uint16Array(pendingTeleports)
+    const translations = new Float32Array(pendingTeleports.length * 3)
 
-    for (let i = 0, j = 0, l = pendingTeleports.length; i < l; i += 1, j += 4) {
-      translations[j + 0] = pendingTeleports[i]
-      translations[j + 1] = Math.random() * 14 - 7
-      translations[j + 2] = 5
-      translations[j + 3] = Math.random() * 14 - 7
+    for (let i = 0, j = 0, l = ids.length; i < l; i += 1, j += 3) {
+      translations[j + 0] = Math.random() * 14 - 7
+      translations[j + 1] = 5
+      translations[j + 2] = Math.random() * 14 - 7
     }
 
-    sword.setTranslations(translations, false, true)
+    sword.setTranslations(ids, translations, false, true)
 
-    pendingTeleports = []
+    pendingTeleports.splice(0, pendingTeleports.length)
   })
 }
 
@@ -81,7 +81,7 @@ directionalLight.shadow.camera.far = 20
   mesh.position.set(0, -sizeY - 5, 0)
   scene.add(mesh)
 
-  const id = sword.createRigidBody(mesh, {
+  await sword.createRigidBody(mesh, {
     collider: sword.ColliderType.Cuboid,
     type: sword.RigidBodyType.Fixed,
     hx: size / 2,

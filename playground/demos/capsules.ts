@@ -33,7 +33,7 @@ const matrix = new THREE.Matrix4()
 
 mesh.instanceColor!.needsUpdate = true
 
-const ids = sword.createRigidBodies(mesh, {
+const ids = await sword.createRigidBodies(mesh, {
   type: sword.RigidBodyType.Dynamic,
   collider: sword.ColliderType.Capsule,
   events: sword.ActiveEvents.CONTACT_EVENTS,

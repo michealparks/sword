@@ -24,7 +24,7 @@ for (let index = 0; index < constants.NUM_MESHES; index += 1) {
 
 mesh.instanceColor!.needsUpdate = true
 
-const ids = sword.createRigidBodies(mesh, {
+const ids = await sword.createRigidBodies(mesh, {
   type: sword.RigidBodyType.Dynamic,
   collider: sword.ColliderType.Ball,
   radius,
@@ -33,23 +33,20 @@ const ids = sword.createRigidBodies(mesh, {
   groups: [1],
 })
 
-sword.once('bodiesLoaded', () => {
-  const impulses = new Float32Array(ids.length * 7)
+const impulses = new Float32Array(ids.length * 6)
 
-  const random = () => {
-    return (Math.random() - 0.5) * 2
-  }
+const random2 = () => {
+  return (Math.random() - 0.5) * 2
+}
 
-  for (let i = 0, j = 0, l = ids.length; i < l; i += 1, j += 7) {
-    impulses[j + 0] = ids[i]
-    impulses[j + 1] = random()
-    impulses[j + 2] = random()
-    impulses[j + 3] = random()
-    impulses[j + 4] = random()
-    impulses[j + 5] = random()
-    impulses[j + 6] = random()
-  }
+for (let i = 0, j = 0, l = ids.length; i < l; i += 1, j += 6) {
+  impulses[j + 0] = random2()
+  impulses[j + 1] = random2()
+  impulses[j + 2] = random2()
+  impulses[j + 3] = random2()
+  impulses[j + 4] = random2()
+  impulses[j + 5] = random2()
+}
 
-  sword.applyLinearAndTorqueImpulses(impulses)
-})
+sword.applyLinearAndTorqueImpulses(ids, impulses)
 

@@ -17,105 +17,121 @@ export const setCollisionGroups = (id: number, group: number) => {
   collidermap.get(id)!.setCollisionGroups(group)
 }
 
-export const setNextKinematicTransforms = (transforms: Float32Array) => {
-  for (let i = 0, l = transforms.length; i < l; i += 8) {
-    const body = bodymap.get(transforms[i + 0])!
+interface Data {
+  id: number
+  translation: RAPIER.Vector3
+  rotation: RAPIER.Rotation
+}
+
+export const setNextKinematicTransform = (data: Data) => {
+  const body = bodymap.get(data.id)!
+  body.setNextKinematicTranslation(data.translation)
+  body.setNextKinematicRotation(data.rotation)
+}
+
+export const setNextKinematicTransforms = (
+  ids: Uint16Array,
+  transforms: Float32Array
+) => {
+  for (let i = 0, j = 0, l = ids.length; i < l; i += 1, j += 7) {
+    const body = bodymap.get(ids[i])!
 
     body.setNextKinematicTranslation({
-      x: transforms[i + 1],
-      y: transforms[i + 2],
-      z: transforms[i + 3],
+      x: transforms[j + 0],
+      y: transforms[j + 1],
+      z: transforms[j + 2],
     })
 
     body.setNextKinematicRotation({
-      w: transforms[i + 7],
-      x: transforms[i + 4],
-      y: transforms[i + 5],
-      z: transforms[i + 6],
+      w: transforms[j + 6],
+      x: transforms[j + 3],
+      y: transforms[j + 4],
+      z: transforms[j + 5],
     })
   }
 }
 
-export const setTransforms = (transforms: Float32Array) => {
-  for (let i = 0, l = transforms.length; i < l; i += 8) {
-    const body = bodymap.get(transforms[i + 0])!
+export const setTransforms = (ids: Uint16Array, transforms: Float32Array) => {
+  for (let i = 0, j = 0, l = ids.length; i < l; i += 1, j += 7) {
+    const body = bodymap.get(ids[i])!
 
     body.setTranslation({
-      x: transforms[i + 1],
-      y: transforms[i + 2],
-      z: transforms[i + 3],
+      x: transforms[j + 0],
+      y: transforms[j + 1],
+      z: transforms[j + 2],
     }, false)
 
     body.setRotation({
-      w: transforms[i + 7],
-      x: transforms[i + 4],
-      y: transforms[i + 5],
-      z: transforms[i + 6],
+      w: transforms[j + 6],
+      x: transforms[j + 3],
+      y: transforms[j + 4],
+      z: transforms[j + 5],
     }, true)
   }
 }
 
-export const setVelocities = (velocities: Float32Array) => {
-  for (let i = 0, l = velocities.length; i < l; i += 7) {
-    const body = bodymap.get(velocities[i + 0])!
+export const setVelocities = (ids: Uint16Array, velocities: Float32Array) => {
+  for (let i = 0, j = 0, l = velocities.length; i < l; i += 1, j += 6) {
+    const body = bodymap.get(ids[i])!
 
     body.setLinvel({
-      x: velocities[i + 1],
-      y: velocities[i + 2],
-      z: velocities[i + 3],
+      x: velocities[j + 0],
+      y: velocities[j + 1],
+      z: velocities[j + 2],
     }, false)
 
     body.setAngvel({
-      x: velocities[i + 4],
-      y: velocities[i + 5],
-      z: velocities[i + 6],
+      x: velocities[j + 3],
+      y: velocities[j + 4],
+      z: velocities[j + 5],
     }, true)
   }
 }
 
-export const setTransformsAndVelocities = (array: Float32Array) => {
-  for (let i = 0, l = array.length; i < l; i += 14) {
-    const body = bodymap.get(array[i + 0])!
+export const setTransformsAndVelocities = (ids: Uint16Array, array: Float32Array) => {
+  for (let i = 0, j = 0, l = ids.length; i < l; i += 1, j += 13) {
+    const body = bodymap.get(ids[i])!
 
     body.setTranslation({
-      x: array[i + 1],
-      y: array[i + 2],
-      z: array[i + 3],
+      x: array[j + 0],
+      y: array[j + 1],
+      z: array[j + 2],
     }, false)
 
     body.setRotation({
-      w: array[i + 7],
-      x: array[i + 4],
-      y: array[i + 5],
-      z: array[i + 6],
+      w: array[j + 6],
+      x: array[j + 3],
+      y: array[j + 4],
+      z: array[j + 5],
     }, false)
 
     body.setLinvel({
-      x: array[i + 8],
-      y: array[i + 9],
-      z: array[i + 10],
+      x: array[j + 7],
+      y: array[j + 8],
+      z: array[j + 9],
     }, false)
 
     body.setAngvel({
-      x: array[i + 11],
-      y: array[i + 12],
-      z: array[i + 13],
+      x: array[j + 10],
+      y: array[j + 11],
+      z: array[j + 12],
     }, true)
   }
 }
 
 export const setTranslations = (
+  ids: Uint16Array,
   translations: Float32Array,
   resetAngvel: boolean,
   resetLinvel: boolean
 ) => {
-  for (let i = 0, l = translations.length; i < l; i += 4) {
-    const body = bodymap.get(translations[i + 0])!
+  for (let i = 0, j = 0, l = ids.length; i < l; i += 1, j += 3) {
+    const body = bodymap.get(ids[i])!
 
     body.setTranslation({
-      x: translations[i + 1],
-      y: translations[i + 2],
-      z: translations[i + 3],
+      x: translations[j + 0],
+      y: translations[j + 1],
+      z: translations[j + 2],
     }, true)
 
     if (resetAngvel) {

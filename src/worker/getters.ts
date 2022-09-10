@@ -1,7 +1,7 @@
 import { bodymap } from './bodies'
 import { events } from '../constants/events'
 
-export const getVelocities = (ids: Float32Array, pid: number) => {
+export const getVelocities = (ids: Uint16Array, pid: number) => {
   const velocities = new Float32Array(ids.length * 6)
 
   for (let i = 0, j = 0, l = ids.length; i < l; i += 1, j += 6) {

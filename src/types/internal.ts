@@ -1,25 +1,14 @@
 import type { ColliderTypes, RigidBodyTypes } from './rigidbody'
 import type { ColliderType } from '../constants/collider'
 
-export interface Transform {
-  id: number
-  qw: number
-  qx: number
-  qy: number
-  qz: number
-  x: number
-  y: number
-  z: number
-}
-
 interface WorkerOptions {
   canSleep: boolean
   ccd: boolean
   events: number
   density: number
-  filter: number[]
-  groups: number[]
-  instances: Transform[]
+  filter?: number[]
+  groups?: number[]
+  instances: Float32Array
   type: RigidBodyTypes
 }
 

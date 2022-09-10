@@ -31,7 +31,7 @@ for (let index = 0; index < constants.NUM_MESHES; index += 1) {
   mesh.setMatrixAt(index, matrix)
 }
 
-sword.createRigidBodies(mesh, {
+await sword.createRigidBodies(mesh, {
   type: sword.RigidBodyType.Dynamic,
   collider: sword.ColliderType.ConvexHull,
   vertices,

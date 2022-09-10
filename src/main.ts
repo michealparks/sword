@@ -1,9 +1,6 @@
 import { createPromise, createPromiseId, execPromise } from './lib'
 import { disposeAllBodies, updateDynamicBodies } from './lib/dynamic'
-import { emit } from './lib/events'
 import { events } from './constants/events'
-import { newBodies } from './lib/creators'
-import { update } from 'three-kit'
 import { updateDebugDrawer } from './debug/renderer'
 import { worker } from './lib/worker'
 
@@ -195,26 +192,11 @@ export const destroyAllRigidBodies = async () => {
   disposeAllBodies()
 }
 
-const tick = () => {
-  if (newBodies.length > 0) {
-    const chunk = newBodies.splice(0, 10)
-    worker.postMessage({
-      bodies: chunk,
-      event: events.CREATE_RIGIDBODIES,
-    })
-
-    if (newBodies.length === 0) {
-      emit('bodiesLoaded')
-    }
-  }
-}
-
 worker.addEventListener('message', (message) => {
   const { data } = message
 
   switch (data.event) {
   case events.INIT:
-    update(tick)
     return execPromise(data.pid)
   case events.DEBUG_DRAW:
     return updateDebugDrawer(data.vertices, data.colors)
@@ -229,10 +211,12 @@ worker.addEventListener('message', (message) => {
       data.collisionEnd,
       data.contactStart
     )
-    return updateDynamicBodies(data.transforms)
+    return updateDynamicBodies(data.ids, data.transforms)
+  case events.CREATE_RIGIDBODIES:
+    return execPromise(data.pid, data.ids)
   case events.GET_VELOCITIES:
     return execPromise(data.pid, data.velocities)
   default:
-    throw new Error(`Unhandled event ${data.event}`)
+    throw new Error(`Unhandled event in main script: ${data.event}!`)
   }
 })

@@ -24,7 +24,7 @@ for (let index = 0; index < NUM_MESHES; index += 1) {
 
 boxes.instanceColor!.needsUpdate = true
 
-sword.createRigidBodies(boxes, {
+await sword.createRigidBodies(boxes, {
   type: sword.RigidBodyType.Dynamic,
   collider: sword.ColliderType.Cuboid,
   hx: halfExtents,
@@ -32,7 +32,7 @@ sword.createRigidBodies(boxes, {
   hz: halfExtents,
 })
 
-const playerId = sword.createRigidBody(player, {
+const playerId = await sword.createRigidBody(player, {
   type: sword.RigidBodyType.KinematicPositionBased,
   collider: sword.ColliderType.Cuboid,
   hx: 1,
@@ -52,9 +52,9 @@ update(() => {
 
   rotation.y += 0.1
 
-  sword.setNextKinematicTransforms(new Float32Array([
+  sword.setNextKinematicTransform(
     playerId,
-    position.x, position.y, position.z,
-    quaternion.x, quaternion.y, quaternion.z, quaternion.w
-  ]))
+    { x: position.x, y: position.y, z: position.z },
+    { x: quaternion.x, y: quaternion.y, z: quaternion.z, w: quaternion.w },
+  )
 })

@@ -1,12 +1,6 @@
 const promises = new Map<number, unknown>()
 
 let currentPid = 0
-let currentId = -1
-
-export const createBodyId = () => {
-  currentId += 1
-  return currentId
-}
 
 export const createPromiseId = () => {
   currentPid += 1
@@ -32,5 +26,5 @@ export const execPromise = (pid: number, data?: unknown) => {
  * @returns The number of bodies.
  */
 export const count = () => {
-  return currentId
+  return 0 // @TODO currentId
 }

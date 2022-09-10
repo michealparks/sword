@@ -1,8 +1,6 @@
 import { events } from '../constants/events'
 import { worker } from './worker'
 
-const pendingKinematicTransform: number[] = []
-
 export const setActiveCollisionTypes = (id: number, types: number) => {
   worker.postMessage({
     event: events.SET_ACTIVE_COLLISION_TYPES,
@@ -27,55 +25,69 @@ export const setGravity = (x: number, y: number, z: number) => {
   })
 }
 
+export const setNextKinematicTransform = (
+  id: number,
+  translation: { x: number, y: number, z: number },
+  rotation: { w: number, x: number, y: number, z: number }
+) => {
+  worker.postMessage({
+    event: events.SET_NEXT_KINEMATIC_TRANSFORM,
+    id,
+    rotation,
+    translation,
+  })
+}
+
 /**
  *
  * @param transforms
  */
-export const setNextKinematicTransforms = (transforms: Float32Array) => {
+export const setNextKinematicTransforms = (
+  ids: Uint16Array,
+  transforms: Float32Array
+) => {
   worker.postMessage({
     event: events.SET_NEXT_KINEMATIC_TRANSFORMS,
+    ids,
     transforms,
-  }, [transforms.buffer])
-}
-
-export const setNextKinematicTransform = (
-  id: number,
-  x: number, y: number, z: number,
-  qx: number, qy: number, qz: number, qw: number
-) => {
-  pendingKinematicTransform.push(id, x, y, z, qx, qy, qz, qw)
+  }, [ids.buffer, transforms.buffer])
 }
 
 export const setTranslations = (
+  ids: Uint16Array,
   translations: Float32Array,
   resetAngvel: boolean,
   resetLinvel: boolean
 ) => {
   worker.postMessage({
     event: events.SET_TRANSLATIONS,
+    ids,
     resetAngvel,
     resetLinvel,
     translations,
-  }, [translations.buffer])
+  }, [ids.buffer, translations.buffer])
 }
 
-export const setTransforms = (transforms: Float32Array) => {
+export const setTransforms = (ids: Uint16Array, transforms: Float32Array) => {
   worker.postMessage({
     event: events.SET_TRANSFORMS,
+    ids,
     transforms,
-  }, [transforms.buffer])
+  }, [ids.buffer, transforms.buffer])
 }
 
-export const setTransformsAndVelocities = (array: Float32Array) => {
+export const setTransformsAndVelocities = (ids: Uint16Array, array: Float32Array) => {
   worker.postMessage({
     array,
     event: events.SET_TRANSFORMS_AND_VELOCITIES,
-  }, [array.buffer])
+    ids,
+  }, [array.buffer, ids.buffer])
 }
 
-export const setVelocities = (velocities: Float32Array) => {
+export const setVelocities = (ids: Uint16Array, velocities: Float32Array) => {
   worker.postMessage({
     event: events.SET_VELOCITIES,
+    ids,
     velocities,
-  }, [velocities.buffer])
+  }, [ids.buffer, velocities.buffer])
 }

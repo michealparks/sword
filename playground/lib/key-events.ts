@@ -6,17 +6,19 @@ export const addKeyEvents = () => {
     switch (event.key.toLowerCase()) {
     case 'i':
       const count = sword.dynamicCount()
-      const magnitude = 0.1
+      const magnitude = 5
+
+      const ids = new Uint16Array(count)
       const impulses = new Float32Array(count * 4)
 
-      for (let i = 0, j = 0; j < count; i += 4, j += 1) {
-        impulses[i + 0] = j
+      for (let i = 0, j = 0; j < count; i += 3, j += 1) {
+        ids[j] = j
+        impulses[i + 0] = (Math.random() - 0.5) * magnitude
         impulses[i + 1] = (Math.random() - 0.5) * magnitude
         impulses[i + 2] = (Math.random() - 0.5) * magnitude
-        impulses[i + 3] = (Math.random() - 0.5) * magnitude
       }
 
-      sword.applyImpulses(impulses)
+      sword.applyImpulses(ids, impulses)
       break
     case 'p':
       if (sword.running()) {
