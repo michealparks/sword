@@ -7,13 +7,13 @@ import {
   bodies,
   bodymap,
   collidermap,
-  disabledmap,
   handlemap,
   reportContact
 } from './bodies'
 import {
   disableBody,
   setActiveCollisionTypes,
+  setForces,
   setNextKinematicTransform,
   setNextKinematicTransforms,
   setTransformAndVelocity,
@@ -333,32 +333,34 @@ self.addEventListener('message', (message) => {
   const { data } = message
 
   switch (data.event) {
-  case events.INIT:
-    return init(data.pid, data.x, data.y, data.z)
-  case events.RUN:
-    return run(data.pid)
-  case events.PAUSE:
-    return pause(data.pid)
-  case events.SET_DEBUG_DRAW:
-    return setDebugDraw(data.on, data.slowdown)
-  case events.CREATE_RIGIDBODIES:
-    return createRigidBodies(data)
-  case events.DESTROY_ALL_RIGIDBODIES:
-    return destroyAllRigidBodies(data.pid)
-  case events.DISABLE_BODY:
-    return disableBody(data.id)
   case events.APPLY_IMPULSES:
     return applyImpulses(data.ids, data.impulses)
   case events.APPLY_TORQUE_IMPULSES:
     return applyTorqueImpulses(data.ids, data.impulses)
   case events.APPLY_LINEAR_AND_TORQUE_IMPULSES:
     return applyLinearAndTorqueImpulses(data.ids, data.impulses)
+  case events.CREATE_RIGIDBODIES:
+    return createRigidBodies(data)
+  case events.DESTROY_ALL_RIGIDBODIES:
+    return destroyAllRigidBodies(data.pid)
+  case events.DISABLE_BODY:
+    return disableBody(data.id)
   case events.GET_VELOCITY:
     return getVelocity(data.id, data.pid)
   case events.GET_VELOCITIES:
     return getVelocities(data.ids, data.pid)
+  case events.INIT:
+    return init(data.pid, data.x, data.y, data.z)
+  case events.PAUSE:
+    return pause(data.pid)
+  case events.RUN:
+    return run(data.pid)
   case events.SET_ACTIVE_COLLISION_TYPES:
     return setActiveCollisionTypes(data.id, data.types)
+  case events.SET_DEBUG_DRAW:
+    return setDebugDraw(data.on, data.slowdown)
+  case events.SET_FORCES:
+    return setForces(data.ids, data.forces)
   case events.SET_GRAVITY:
     return setGravity(data.x, data.y, data.z)
   case events.SET_NEXT_KINEMATIC_TRANSFORM:

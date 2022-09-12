@@ -24,6 +24,16 @@ export const setCollisionGroups = (id: number, group: number) => {
   collidermap.get(id)!.setCollisionGroups(group)
 }
 
+export const setForces = (ids: Uint16Array, forces: Float32Array) => {
+  for (let i = 0, j = 0, l = ids.length; i < l; i += 1, j += 6) {
+    const body = bodymap.get(ids[i])!
+    body.resetForces(true)
+    body.resetTorques(true)
+    body.addForce({ x: forces[j + 0], y: forces[j + 1], z: forces[j + 2] }, true)
+    body.addTorque({ x: forces[j + 3], y: forces[j + 4], z: forces[j + 5] }, true)
+  }
+}
+
 interface Data {
   id: number
   translation: RAPIER.Vector3
@@ -73,24 +83,6 @@ export const setTransforms = (ids: Uint16Array, transforms: Float32Array) => {
       x: transforms[j + 3],
       y: transforms[j + 4],
       z: transforms[j + 5],
-    }, true)
-  }
-}
-
-export const setVelocities = (ids: Uint16Array, velocities: Float32Array) => {
-  for (let i = 0, j = 0, l = velocities.length; i < l; i += 1, j += 6) {
-    const body = bodymap.get(ids[i])!
-
-    body.setLinvel({
-      x: velocities[j + 0],
-      y: velocities[j + 1],
-      z: velocities[j + 2],
-    }, false)
-
-    body.setAngvel({
-      x: velocities[j + 3],
-      y: velocities[j + 4],
-      z: velocities[j + 5],
     }, true)
   }
 }
@@ -180,5 +172,23 @@ export const setTranslations = (
     if (resetLinvel) {
       resetLinearVelocity(body)
     }
+  }
+}
+
+export const setVelocities = (ids: Uint16Array, velocities: Float32Array) => {
+  for (let i = 0, j = 0, l = velocities.length; i < l; i += 1, j += 6) {
+    const body = bodymap.get(ids[i])!
+
+    body.setLinvel({
+      x: velocities[j + 0],
+      y: velocities[j + 1],
+      z: velocities[j + 2],
+    }, false)
+
+    body.setAngvel({
+      x: velocities[j + 3],
+      y: velocities[j + 4],
+      z: velocities[j + 5],
+    }, true)
   }
 }

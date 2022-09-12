@@ -16,6 +16,14 @@ export const setActiveCollisionTypes = (id: number, types: number) => {
   })
 }
 
+export const setForces = (ids: Uint16Array, forces: Float32Array) => {
+  worker.postMessage({
+    event: events.SET_FORCES,
+    forces,
+    ids,
+  }, [forces.buffer, ids.buffer])
+}
+
 /**
  * Sets the gravity of the physics world.
  *
