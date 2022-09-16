@@ -176,7 +176,7 @@ export const setTranslations = (
 }
 
 export const setVelocities = (ids: Uint16Array, velocities: Float32Array) => {
-  for (let i = 0, j = 0, l = velocities.length; i < l; i += 1, j += 6) {
+  for (let i = 0, j = 0, l = ids.length; i < l; i += 1, j += 6) {
     const body = bodymap.get(ids[i])!
 
     body.setLinvel({
