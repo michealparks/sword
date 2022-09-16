@@ -98,10 +98,17 @@ export const setTranslations = (
   }, [ids.buffer, translations.buffer])
 }
 
-export const setTransforms = (ids: Uint16Array, transforms: Float32Array) => {
+export const setTransforms = (
+  ids: Uint16Array,
+  transforms: Float32Array,
+  resetAngvel: boolean,
+  resetLinvel: boolean
+) => {
   worker.postMessage({
     event: events.SET_TRANSFORMS,
     ids,
+    resetAngvel,
+    resetLinvel,
     transforms,
   }, [ids.buffer, transforms.buffer])
 }

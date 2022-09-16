@@ -372,7 +372,7 @@ self.addEventListener('message', (message) => {
   case events.SET_TRANSLATIONS:
     return setTranslations(data.ids, data.translations, data.resetAngvel, data.resetLinvel)
   case events.SET_TRANSFORMS:
-    return setTransforms(data.ids, data.transforms)
+    return setTransforms(data.ids, data.transforms, data.resetAngvel, data.resetLinvel)
   case events.SET_TRANSFORM_AND_VELOCITY:
     return setTransformAndVelocity(
       data.id,

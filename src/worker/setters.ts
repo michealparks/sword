@@ -68,7 +68,12 @@ export const setNextKinematicTransforms = (
   }
 }
 
-export const setTransforms = (ids: Uint16Array, transforms: Float32Array) => {
+export const setTransforms = (
+  ids: Uint16Array,
+  transforms: Float32Array,
+  resetAngvel: boolean,
+  resetLinvel: boolean
+) => {
   for (let i = 0, j = 0, l = ids.length; i < l; i += 1, j += 7) {
     const body = bodymap.get(ids[i])!
 
@@ -84,6 +89,14 @@ export const setTransforms = (ids: Uint16Array, transforms: Float32Array) => {
       y: transforms[j + 4],
       z: transforms[j + 5],
     }, true)
+
+    if (resetAngvel) {
+      resetAngularVelocity(body)
+    }
+
+    if (resetLinvel) {
+      resetLinearVelocity(body)
+    }
   }
 }
 
