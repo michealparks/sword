@@ -26,5 +26,6 @@ export const execPromise = (pid: number, data?: unknown) => {
  * @returns The number of bodies.
  */
 export const count = () => {
-  return 0 // @TODO currentId
+  // @TODO currentId
+  return 0
 }
