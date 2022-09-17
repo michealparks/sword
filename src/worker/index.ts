@@ -21,7 +21,8 @@ import {
   setTransformsAndVelocities,
   setTranslation,
   setTranslations,
-  setVelocities
+  setVelocities,
+  setVelocitiesAndRotations
 } from './setters'
 import { getVelocities, getVelocity } from './getters'
 import { ActiveEvents } from '../constants/active-events'
@@ -385,6 +386,8 @@ self.addEventListener('message', (message) => {
     return setTransformsAndVelocities(data.ids, data.array)
   case events.SET_VELOCITIES:
     return setVelocities(data.ids, data.velocities)
+  case events.SET_VELOCITIES_AND_ROTATIONS:
+    return setVelocitiesAndRotations(data.ids, data.array)
   default:
     throw new Error(`Unexpected event in worker: ${data.event}!`)
   }

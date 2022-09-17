@@ -145,3 +145,11 @@ export const setVelocities = (ids: Uint16Array, velocities: Float32Array) => {
     velocities,
   }, [ids.buffer, velocities.buffer])
 }
+
+export const setVelocitiesAndRotations = (ids: Uint16Array, array: Float32Array) => {
+  worker.postMessage({
+    array,
+    event: events.SET_VELOCITIES_AND_ROTATIONS,
+    ids,
+  }, [array.buffer, ids.buffer])
+}

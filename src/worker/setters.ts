@@ -108,9 +108,9 @@ export const setTransformAndVelocity = (
   angvel: RAPIER.Vector
 ) => {
   const body = bodymap.get(id)!
-  body.setTranslation(translation, false)
-  body.setRotation(rotation, false)
-  body.setLinvel(linvel, false)
+  body.setTranslation(translation, true)
+  body.setRotation(rotation, true)
+  body.setLinvel(linvel, true)
   body.setAngvel(angvel, true)
 }
 
@@ -122,20 +122,20 @@ export const setTransformsAndVelocities = (ids: Uint16Array, array: Float32Array
       x: array[j + 0],
       y: array[j + 1],
       z: array[j + 2],
-    }, false)
+    }, true)
 
     body.setRotation({
       w: array[j + 6],
       x: array[j + 3],
       y: array[j + 4],
       z: array[j + 5],
-    }, false)
+    }, true)
 
     body.setLinvel({
       x: array[j + 7],
       y: array[j + 8],
       z: array[j + 9],
-    }, false)
+    }, true)
 
     body.setAngvel({
       x: array[j + 10],
@@ -196,12 +196,31 @@ export const setVelocities = (ids: Uint16Array, velocities: Float32Array) => {
       x: velocities[j + 0],
       y: velocities[j + 1],
       z: velocities[j + 2],
-    }, false)
+    }, true)
 
     body.setAngvel({
       x: velocities[j + 3],
       y: velocities[j + 4],
       z: velocities[j + 5],
+    }, true)
+  }
+}
+
+export const setVelocitiesAndRotations = (ids: Uint16Array, array: Float32Array) => {
+  for (let i = 0, j = 0, l = ids.length; i < l; i += 1, j += 7) {
+    const body = bodymap.get(ids[i])!
+
+    body.setLinvel({
+      x: array[j + 0],
+      y: array[j + 1],
+      z: array[j + 2],
+    }, true)
+
+    body.setRotation({
+      w: array[j + 6],
+      x: array[j + 3],
+      y: array[j + 4],
+      z: array[j + 5],
     }, true)
   }
 }
