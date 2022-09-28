@@ -1,7 +1,7 @@
 import * as THREE from 'three'
+import debug from 'three-debug'
 import { scene, assets } from 'three-kit'
 import { NUM_MESHES } from '../../constants'
-import * as debug from 'three-kit/debug'
 import { CustomSinCurve } from './curve'
 
 type GLTF = { scene: THREE.Scene }

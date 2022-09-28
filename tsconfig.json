@@ -24,6 +24,7 @@
     "lib": ["ESNext", "DOM", "WebWorker"],
     "moduleResolution": "Node",
     "declaration": true, // generates declaration files
+    "declarationMap": true,
     "sourceMap": true,
     "resolveJsonModule": true,
     "isolatedModules": true,

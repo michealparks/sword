@@ -21,19 +21,20 @@
   },
   "devDependencies": {
     "@types/three": "^0.144.0",
-    "@typescript-eslint/eslint-plugin": "^5.37.0",
-    "@typescript-eslint/parser": "^5.37.0",
+    "@typescript-eslint/eslint-plugin": "^5.38.1",
+    "@typescript-eslint/parser": "^5.38.1",
     "@vitejs/plugin-basic-ssl": "^0.1.2",
-    "eslint": "^8.23.1",
-    "nice-color-palettes": "^2.0.0",
+    "eslint": "^8.24.0",
+    "nice-color-palettes": "^3.0.0",
     "terser": "^5.15.0",
-    "typescript": "^4.8.3",
-    "vite": "^3.1.1",
-    "vite-plugin-mkcert": "^1.9.0",
-    "vite-plugin-wasm": "^2.1.0"
+    "typescript": "^4.8.4",
+    "vite": "^3.1.3",
+    "vite-plugin-mkcert": "1.9.0",
+    "vite-plugin-wasm": "^3.0.0"
   },
   "dependencies": {
     "@dimforge/rapier3d-compat": "^0.9.0",
+    "three-debug": "^0.0.7",
     "three-kit": "github:michealparks/three-kit"
   }
 }

@@ -1,4 +1,4 @@
-import * as debug from 'three-kit/debug'
+import debug from 'three-debug'
 import * as constants from './constants'
 
 const demos = import.meta.glob('./demos/*.ts')
@@ -24,6 +24,6 @@ pane
 pane
   .addInput(parameters, 'numMeshes')
   .on('change', () => {
-    localStorage.setItem('ammo.numCubes', parameters.numMeshes)
+    localStorage.setItem('ammo.numCubes', String(parameters.numMeshes))
     window.location.reload()
   })

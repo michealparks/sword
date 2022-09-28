@@ -20,7 +20,7 @@ export const updateDebugDrawer = (vertices: Float32Array, colors: Float32Array) 
 /**
  * Toggles the debug drawer.
  *
- * @param debugOn The drawing state.
+ * @param on The drawing state.
  * @param slowdown An optional multiplier on the framerate.
  * Default is 3 times slower than the physics frame.
  */

@@ -196,7 +196,7 @@ export const setVelocities = (ids: Uint16Array, velocities: Float32Array) => {
       x: velocities[j + 0],
       y: velocities[j + 1],
       z: velocities[j + 2],
-    }, true)
+    }, false)
 
     body.setAngvel({
       x: velocities[j + 3],
