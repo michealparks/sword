@@ -1,9 +1,11 @@
 import './main.css'
-import './pane'
-import '../src/debug'
+import { debug } from '../src/debug'
+import { initPane } from './pane'
 import * as THREE from 'three'
 import { scene, run, lights, camera, update } from 'three-kit'
 import * as sword from '../src/main'
+
+initPane(debug)
 
 const demos = import.meta.glob('./demos/*.ts')
 

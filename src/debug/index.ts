@@ -1,10 +1,10 @@
-import * as sword from '../main'
 import * as THREE from 'three'
-import { camera, renderer, scene } from 'three-kit'
-import debug from 'three-debug'
+import * as sword from '../main'
+import { camera, composer, renderer, scene } from 'three-kit'
+import Debug from 'three-debug'
 import { setDebugDraw } from './renderer'
 
-debug.init(THREE, scene, camera, renderer)
+export const debug = new Debug(THREE, scene, camera, renderer, composer)
 
 // if (debug.storage.physicsDebugDraw) {
 //   setDebugDraw(true)
@@ -17,7 +17,7 @@ const params = {
   fps: 0,
 }
 
-const pane = debug.addPane('physics')
+const pane = debug.addPane('Physics')
 pane.addInput(params, 'debugDraw').on('change', () => {
   setDebugDraw(params.debugDraw)
   // debug.save('physicsDebugDraw', params.debugDraw)
@@ -25,7 +25,7 @@ pane.addInput(params, 'debugDraw').on('change', () => {
 
 const monitors: ({ refresh(): void })[] = []
 
-const folder = debug.addFolder(debug.stats, 'physics')
+const folder = debug.stats.addFolder({ title: 'physics' })
 monitors.push(folder.addMonitor(params, 'fps', {
   label: 'physics fps',
   max: 120,

@@ -29,7 +29,7 @@ const meshTypes = [
   'asteroid',
 ]
 
-const pane = debug.addPane('game')
+const pane = debug.addPane('Game')
 pane.addInput(params, 'geometry', {
   options: Object.fromEntries(meshTypes.map(entry => ([entry, entry])))
 }).on('change', () => {

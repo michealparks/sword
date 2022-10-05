@@ -8,7 +8,7 @@ import { addKeyEvents } from '../lib/key-events'
 type GLTF = { scene: THREE.Scene }
 
 const matrix = new THREE.Matrix4()
-  
+
 const [ship, asteroid] = await Promise.all([
   assets.load<GLTF>('ship.glb'),
   assets.load<GLTF>('asteroid.glb'),
