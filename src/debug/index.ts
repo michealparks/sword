@@ -1,47 +1,56 @@
-import * as THREE from 'three'
 import * as sword from '../main'
-import { camera, composer, renderer, scene } from 'three-kit'
-import Debug from 'three-debug'
+import type Debug from 'three-debug'
 import { setDebugDraw } from './renderer'
 
-export const debug = new Debug(THREE, scene, camera, renderer, composer)
-
-// if (debug.storage.physicsDebugDraw) {
-//   setDebugDraw(true)
-// }
-
 const params = {
-  // debugDraw: (debug.storage.physicsDebugDraw as boolean | undefined) ?? false,
   debugDraw: false,
   dynamicBodies: 0,
   fps: 0,
 }
 
-const pane = debug.addPane('Physics')
-pane.addInput(params, 'debugDraw').on('change', () => {
-  setDebugDraw(params.debugDraw)
-  // debug.save('physicsDebugDraw', params.debugDraw)
-})
+export const physicsDebugPlugin = (debug: Debug) => {
+  const draw = localStorage.getItem('sword.debugDraw') !== null
 
-const monitors: ({ refresh(): void })[] = []
+  if (draw) {
+    setDebugDraw(true)
+  }
 
-const folder = debug.stats.addFolder({ title: 'physics' })
-monitors.push(folder.addMonitor(params, 'fps', {
-  label: 'physics fps',
-  max: 120,
-  min: 0,
-  view: 'graph',
-}))
+  const pane = debug.addPane('Physics')
+  pane.addInput(params, 'debugDraw').on('change', () => {
+    setDebugDraw(params.debugDraw)
+    if (params.debugDraw) {
+      localStorage.setItem('sword.debugDraw', '')
+    } else {
+      localStorage.removeItem('sword.debugDraw')
+    }
+  })
 
-monitors.push(folder.addMonitor(params, 'dynamicBodies'))
+  const monitors: ({ refresh(): void })[] = []
 
-const update = () => {
-  params.dynamicBodies = sword.dynamicCount()
-  params.fps = sword.fps()
+  const stats = debug.stats.addFolder({ title: 'physics' })
+  monitors.push(stats.addMonitor(params, 'fps', {
+    label: 'physics fps',
+    max: 120,
+    min: 0,
+    view: 'graph',
+  }))
 
-  for (const monitor of monitors) {
-    monitor.refresh()
+  monitors.push(stats.addMonitor(params, 'dynamicBodies'))
+
+  const update = () => {
+    params.dynamicBodies = sword.dynamicCount()
+    params.fps = sword.fps()
+
+    for (let i = 0, l = monitors.length; i < l; i += 1) {
+      monitors[i].refresh()
+    }
+  }
+
+  const intervalId = window.setInterval(update, 1000)
+
+  return () => {
+    pane.dispose()
+    stats.dispose()
+    window.clearInterval(intervalId)
   }
 }
-
-setInterval(update, 1000)

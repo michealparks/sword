@@ -1,9 +1,13 @@
 import './main.css'
-import { debug } from '../src/debug'
+import Debug from 'three-debug'
+import { physicsDebugPlugin } from '../src/debug'
 import { initPane } from './pane'
 import * as THREE from 'three'
-import { scene, run, lights, camera, update } from 'three-kit'
+import { scene, run, lights, camera, update, renderer, composer } from 'three-kit'
 import * as sword from '../src/main'
+
+const debug = new Debug(THREE, scene, camera, renderer, composer)
+debug.registerPlugin(physicsDebugPlugin)
 
 initPane(debug)
 

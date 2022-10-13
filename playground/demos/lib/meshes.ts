@@ -1,5 +1,4 @@
 import * as THREE from 'three'
-import debug from 'three-debug'
 import { scene, assets } from 'three-kit'
 import { NUM_MESHES } from '../../constants'
 import { CustomSinCurve } from './curve'
@@ -29,13 +28,13 @@ const meshTypes = [
   'asteroid',
 ]
 
-const pane = debug.addPane('Game')
-pane.addInput(params, 'geometry', {
-  options: Object.fromEntries(meshTypes.map(entry => ([entry, entry])))
-}).on('change', () => {
-  localStorage.setItem('sword.demo.mesh.geometry', params.geometry)
-  window.location.reload()
-})
+// const pane = debug.addPane('Game')
+// pane.addInput(params, 'geometry', {
+//   options: Object.fromEntries(meshTypes.map(entry => ([entry, entry])))
+// }).on('change', () => {
+//   localStorage.setItem('sword.demo.mesh.geometry', params.geometry)
+//   window.location.reload()
+// })
 
 const radius = 0.5
 const path = new CustomSinCurve(1)
