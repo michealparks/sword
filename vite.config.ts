@@ -1,16 +1,17 @@
 import path from 'node:path' 
 import { defineConfig } from 'vite'
 import mkcert from 'vite-plugin-mkcert'
-// import wasm from 'vite-plugin-wasm'
+import wasm from 'vite-plugin-wasm'
 
 export default defineConfig({
   build: {
     minify: 'terser',
+    target: 'esnext',
   },
   envPrefix: ['THREE', 'SWORD'],
   plugins: [
     mkcert(),
-    // wasm(),
+    wasm(),
   ],
   publicDir: 'assets',
   server: {

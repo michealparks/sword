@@ -1,5 +1,5 @@
 import { createPromise, createPromiseId } from '.'
-import type RAPIER from '@dimforge/rapier3d-compat'
+import type RAPIER from '@dimforge/rapier3d'
 import { events } from '../constants/events'
 import { worker } from './worker'
 

@@ -1,4 +1,4 @@
-import type RAPIER from '@dimforge/rapier3d-compat'
+import type RAPIER from '@dimforge/rapier3d'
 
 export const bodies: RAPIER.RigidBody[] = []
 export const bodymap = new Map<number, RAPIER.RigidBody>()

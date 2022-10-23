@@ -1,5 +1,5 @@
 import { bodymap, collidermap } from './bodies'
-import type RAPIER from '@dimforge/rapier3d-compat'
+import type RAPIER from '@dimforge/rapier3d'
 
 const resetAngularVelocity = (body: RAPIER.RigidBody) => {
   body.setAngvel({ x: 0, y: 0, z: 0 }, true)

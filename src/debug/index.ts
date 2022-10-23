@@ -27,15 +27,14 @@ export const physicsDebugPlugin = (debug: Debug) => {
 
   const monitors: ({ refresh(): void })[] = []
 
-  const stats = debug.stats.addFolder({ title: 'physics' })
-  monitors.push(stats.addMonitor(params, 'fps', {
+  monitors.push(pane.addMonitor(params, 'fps', {
     label: 'physics fps',
     max: 120,
     min: 0,
     view: 'graph',
   }))
 
-  monitors.push(stats.addMonitor(params, 'dynamicBodies'))
+  monitors.push(pane.addMonitor(params, 'dynamicBodies'))
 
   const update = () => {
     params.dynamicBodies = sword.dynamicCount()
@@ -50,7 +49,6 @@ export const physicsDebugPlugin = (debug: Debug) => {
 
   return () => {
     pane.dispose()
-    stats.dispose()
     window.clearInterval(intervalId)
   }
 }
