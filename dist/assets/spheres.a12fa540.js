@@ -1,0 +1,1 @@
+import{b as s,S as t,I as r,N as n,s as o}from"./index.f99e7c85.js";const d=.4,a=new s,c=new t(d,6,6);a.flatShading=!0;const e=new r(c,a,n);e.castShadow=!0;e.receiveShadow=!0;o.add(e);export{e as m,d as r};

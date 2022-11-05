@@ -1,11 +1,11 @@
-import path from 'node:path' 
 import { defineConfig } from 'vite'
 import mkcert from 'vite-plugin-mkcert'
 import wasm from 'vite-plugin-wasm'
+import define from './env'
 
 export default defineConfig({
   build: {
-    minify: 'terser',
+    minify: true,
     target: 'esnext',
   },
   envPrefix: ['THREE', 'SWORD'],
@@ -27,4 +27,5 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
   },
+  define,
 })

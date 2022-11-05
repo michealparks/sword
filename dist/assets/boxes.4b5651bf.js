@@ -1,0 +1,1 @@
+import{B as a,b as t,I as n,N as o,s as r}from"./index.f99e7c85.js";const e=1,c=new a(e,e,e),d=new t,i=e/2,s=new n(c,d,o);s.name="box instances";s.castShadow=!0;s.receiveShadow=!0;r.add(s);export{s as b,i as h};

@@ -3,6 +3,7 @@ import {
   applyLinearAndTorqueImpulses,
   applyTorqueImpulses
 } from './appliers'
+
 import {
   bodies,
   bodymap,
@@ -10,6 +11,7 @@ import {
   handlemap,
   reportContact
 } from './bodies'
+
 import {
   disableBody,
   setActiveCollisionTypes,
@@ -24,6 +26,7 @@ import {
   setVelocities,
   setVelocitiesAndRotations
 } from './setters'
+
 import { getVelocities, getVelocity } from './getters'
 import { ActiveEvents } from '../constants/active-events'
 import RAPIER from '@dimforge/rapier3d-compat'

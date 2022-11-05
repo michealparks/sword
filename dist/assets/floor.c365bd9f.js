@@ -1,0 +1,1 @@
+import{B as r,b as t,h as s,s as i,i as d,R as l,a as c,H as n}from"./index.f99e7c85.js";const o=20,a=.3,h=new r(o,a,o,1,1),y=new t({color:13421772}),e=new s(h,y);e.name="floor";e.receiveShadow=!0;i.add(e);await d(e,{ccd:!0,type:l.Fixed,collider:c.Cuboid,hx:o/2,hy:a/2,hz:o/2});n(e);export{e as floor,a as floorHeight,o as floorSize};
