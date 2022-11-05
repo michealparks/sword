@@ -4,6 +4,6 @@ import { scene, assets } from 'three-kit'
 type GLTF = { scene: THREE.Scene }
 
 const [ship, asteroid] = await Promise.all([
-  assets.load<GLTF>('ship.glb'),
-  assets.load<GLTF>('asteroid.glb'),
+  assets.loadGLTF('ship.glb'),
+  assets.loadGLTF('asteroid.glb'),
 ])

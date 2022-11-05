@@ -1,4 +1,4 @@
-import { ColliderDesc } from '@dimforge/rapier3d-compat'
+import { ColliderDesc } from '@dimforge/rapier3d'
 import { ColliderType } from '../constants/collider'
 import type { RigidBodyWorkerOptions } from '../types/internal'
 

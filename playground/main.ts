@@ -11,9 +11,9 @@ debug.registerPlugin(physicsDebugPlugin)
 
 initPane(debug)
 
-const demos = import.meta.glob('./demos/*.ts')
+await sword.ready()
 
-await sword.init()
+const demos = import.meta.glob('./demos/*.ts')
 
 import('./demos/lib/floor')
 

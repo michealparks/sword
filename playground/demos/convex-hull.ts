@@ -5,13 +5,11 @@ import { scene, assets } from 'three-kit'
 import { NUM_MESHES } from '../constants'
 import { addKeyEvents } from '../lib/key-events'
 
-type GLTF = { scene: THREE.Scene }
-
 const matrix = new THREE.Matrix4()
 
 const [ship, asteroid] = await Promise.all([
-  assets.load<GLTF>('ship.glb'),
-  assets.load<GLTF>('asteroid.glb'),
+  assets.loadGLTF('ship.glb'),
+  assets.loadGLTF('asteroid.glb'),
 ])
 
 const template = asteroid.scene.getObjectByName('Asteroid') as THREE.Mesh

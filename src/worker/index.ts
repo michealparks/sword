@@ -29,7 +29,7 @@ import {
 
 import { getVelocities, getVelocity } from './getters'
 import { ActiveEvents } from '../constants/active-events'
-import RAPIER from '@dimforge/rapier3d-compat'
+import RAPIER from '@dimforge/rapier3d'
 import { RigidBodyType } from '../constants/rigidbody'
 import type { RigidBodyWorkerOptions } from '../types/internal'
 import { bitmask } from '../lib/bitmask'
@@ -37,33 +37,21 @@ import { createBodyId } from './utils'
 import { createCollider } from './colliders'
 import { events } from '../constants/events'
 
-let world: RAPIER.World | undefined
-let eventQueue: RAPIER.EventQueue
-let now = 0
-let then = 0
-let fps = 0
-let tickId = -1
-let debugTickId = -1
-
 const timestep = 1000 / Number.parseInt(import.meta.env.SWORD_FPS ?? '60', 10)
 const debugSlowdown = Number.parseFloat(import.meta.env.SWORD_DEBUG_SLOWDOWN ?? '3')
 const defaultGravity = Number.parseFloat(import.meta.env.DEFAULT_GRAVITY ?? '-9.8')
 const defaultFriction = Number.parseFloat(import.meta.env.SWORD_DEFAULT_FRICTION ?? '0.2')
 const defaultRestitution = Number.parseFloat(import.meta.env.SWORD_DEFAULT_RESTITUTION ?? '0.5')
 
-const init = async (pid: number, x = 0, y = defaultGravity, z = 0) => {
-  await RAPIER.init()
+const world = new RAPIER.World({ x: 0, y: defaultGravity, z: 0 })
+world.timestep = timestep / 1000
 
-  world = new RAPIER.World({ x, y, z })
-  world.timestep = timestep / 1000
-
-  eventQueue = new RAPIER.EventQueue(true)
-
-  self.postMessage({
-    event: events.INIT,
-    pid,
-  })
-}
+const eventQueue = new RAPIER.EventQueue(true)
+let now = 0
+let then = 0
+let fps = 0
+let tickId = -1
+let debugTickId = -1
 
 const tick = () => {
   world!.step(eventQueue)
@@ -353,8 +341,6 @@ self.addEventListener('message', (message) => {
     return getVelocity(data.id, data.pid)
   case events.GET_VELOCITIES:
     return getVelocities(data.ids, data.pid)
-  case events.INIT:
-    return init(data.pid, data.x, data.y, data.z)
   case events.PAUSE:
     return pause(data.pid)
   case events.RUN:
@@ -404,3 +390,5 @@ if (import.meta.env.SWORD_DEBUG === 'true') {
     })
   }, 1000)
 }
+
+self.postMessage({ event: events.INIT })

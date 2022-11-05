@@ -16,13 +16,15 @@ export { dynamicCount } from './lib/dynamic'
 export { ColliderType } from './constants/collider'
 export { RigidBodyType } from './constants/rigidbody'
 export { ActiveEvents } from './constants/active-events'
-export { ActiveCollisionTypes } from '@dimforge/rapier3d-compat'
+export { ActiveCollisionTypes } from '@dimforge/rapier3d'
 
 type Listener = (...args: number[]) => void
 type Events = 'start' | 'end'
 
 const eventmap = new Map<string, Listener[]>()
 
+let loaded = false
+let readyPromise: (value: unknown) => void
 let currentFps = 0
 let isRunning = false
 
@@ -102,26 +104,19 @@ const emitCollisionEvents = (
   }
 }
 
-/**
- * Initializes the physics engine.
- *
- * @param x An optional x gravity force.
- * @param y An optional y gravity force.
- * @param z An optional z gravity force.
- * @returns A promise that resolves once the engine has been initialized.
- */
-export const init = (x?: number, y?: number, z?: number) => {
-  const pid = createPromiseId()
+const init = () => {
+  loaded = true
+  readyPromise()
+}
 
-  worker.postMessage({
-    event: events.INIT,
-    pid,
-    x,
-    y,
-    z,
+export const ready = () => {
+  if (loaded) {
+    return Promise.resolve()
+  }
+
+  return new Promise((resolve) => {
+    readyPromise = resolve
   })
-
-  return createPromise<undefined>(pid)
 }
 
 /**
@@ -199,7 +194,7 @@ worker.addEventListener('message', (message) => {
 
   switch (data.event) {
   case events.INIT:
-    return execPromise(data.pid)
+    return init()
   case events.DEBUG_DRAW:
     return updateDebugDrawer(data.vertices, data.colors)
   case events.FPS:

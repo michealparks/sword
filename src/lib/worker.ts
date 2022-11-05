@@ -1,3 +1,3 @@
-const url = new URL('../worker/index.ts', import.meta.url)
+import Worker from '../worker/index?worker'
 
-export const worker = new Worker(url, { type: 'module' })
+export const worker = new Worker()
