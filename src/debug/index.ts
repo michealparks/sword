@@ -1,5 +1,5 @@
 import * as sword from '../main'
-import type Debug from 'three-debug'
+import type Inspector from 'three-inspect'
 import { setDebugDraw } from './renderer'
 
 const params = {
@@ -8,7 +8,7 @@ const params = {
   fps: 0,
 }
 
-export const physicsDebugPlugin = (debug: Debug) => {
+export const physicsDebugPlugin = (debug: Inspector) => {
   const draw = localStorage.getItem('sword.debugDraw') !== null
 
   if (draw) {
