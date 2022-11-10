@@ -15,6 +15,7 @@
   "scripts": {
     "start": "vite --host --open",
     "build": "vite build",
+    "build-playground": "vite build -c vite.playground.config.ts --base=/sword/",
     "preview": "vite preview --host",
     "check": "tsc",
     "lint": "eslint ./src"
