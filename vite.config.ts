@@ -14,6 +14,12 @@ export default defineConfig({
     wasm(),
   ],
   publicDir: 'assets',
+  worker: {
+    format: "es",
+    plugins: [
+      wasm(),
+    ]
+  },
   server: {
     fs: {
       strict: true,
