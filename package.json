@@ -21,23 +21,23 @@
     "lint": "eslint ./src"
   },
   "devDependencies": {
-    "@types/three": "^0.146.0",
-    "@typescript-eslint/eslint-plugin": "^5.47.0",
-    "@typescript-eslint/parser": "^5.47.0",
+    "@types/three": "^0.149.0",
+    "@typescript-eslint/eslint-plugin": "^5.52.0",
+    "@typescript-eslint/parser": "^5.52.0",
     "@vitejs/plugin-basic-ssl": "^1.0.1",
-    "eslint": "^8.30.0",
+    "eslint": "^8.34.0",
     "nice-color-palettes": "^3.0.0",
-    "terser": "^5.16.1",
+    "terser": "^5.16.3",
     "three": "^0.148.0",
-    "three-inspect": "^0.2.2",
+    "three-inspect": "^0.2.4",
     "three-kit": "github:michealparks/three-kit",
-    "typescript": "^4.9.4",
-    "vite": "^4.0.3",
-    "vite-plugin-mkcert": "1.10.1",
-    "vite-plugin-wasm": "^3.1.0"
+    "typescript": "^4.9.5",
+    "vite": "^4.1.1",
+    "vite-plugin-mkcert": "1.13.0",
+    "vite-plugin-wasm": "^3.2.1"
   },
   "dependencies": {
-    "@dimforge/rapier3d": "0.10.0"
+    "@dimforge/rapier3d": "0.11.1"
   },
   "peerDependencies": {
     "three": "*"
