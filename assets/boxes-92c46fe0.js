@@ -1,0 +1,1 @@
+import{g as a,B as t,d as n,I as o,N as c}from"./index-6117cbb4.js";const{scene:r}=a(),e=1,d=new t(e,e,e),h=new n,m=e/2,s=new o(d,h,c);s.name="box instances";s.castShadow=!0;s.receiveShadow=!0;r.add(s);export{s as b,m as h};
