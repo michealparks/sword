@@ -1,13 +1,15 @@
 import * as THREE from 'three'
-import { scene, assets } from 'three-kit'
+import { three, loadGLTF } from 'trzy'
 import { NUM_MESHES } from '../../constants'
 import { CustomSinCurve } from './curve'
+
+const { scene } = three()
 
 type GLTF = { scene: THREE.Scene }
 
 const [ship, asteroid] = await Promise.all([
-  assets.loadGLTF('ship.glb'),
-  assets.loadGLTF('asteroid.glb'),
+  loadGLTF('glb/ship.glb'),
+  loadGLTF('glb/asteroid.glb'),
 ])
 
 const params = {

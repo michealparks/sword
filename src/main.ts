@@ -106,7 +106,7 @@ const emitCollisionEvents = (
 
 const init = () => {
   loaded = true
-  readyPromise()
+  readyPromise?.()
 }
 
 export const ready = () => {

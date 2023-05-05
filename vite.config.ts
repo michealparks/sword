@@ -1,25 +1,23 @@
 import { defineConfig } from 'vite'
 import mkcert from 'vite-plugin-mkcert'
 import wasm from 'vite-plugin-wasm'
-import define from './env'
 
 export default defineConfig({
   build: {
     minify: true,
     target: 'esnext',
   },
-  envPrefix: ['THREE', 'SWORD'],
   plugins: [
     mkcert(),
     wasm(),
   ],
-  publicDir: 'assets',
   worker: {
     format: "es",
     plugins: [
       wasm(),
     ]
   },
+  publicDir: 'assets',
   server: {
     fs: {
       strict: true,
@@ -33,5 +31,4 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
   },
-  define,
 })

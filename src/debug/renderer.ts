@@ -1,6 +1,5 @@
 import * as THREE from 'three'
 import { events } from '../constants/events'
-import { scene } from 'three-kit'
 import { worker } from '../lib/worker'
 
 const material = new THREE.LineBasicMaterial({

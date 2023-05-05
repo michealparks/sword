@@ -1,12 +1,15 @@
 import './main.css'
 import Inspector from 'three-inspect'
+import * as THREE from 'three'
+import * as sword from '../src/main'
+import { three } from 'trzy'
 import { physicsDebugPlugin } from '../src/debug'
 import { initPane } from './pane'
-import * as THREE from 'three'
-import { scene, run, lights, camera, update, renderer, composer } from 'three-kit'
-import * as sword from '../src/main'
+console.log(1)
 
-const debug = new Inspector(THREE, scene, camera, renderer, composer)
+const { scene, camera, renderer, update } = three()
+
+const debug = new Inspector({ THREE, scene, camera, renderer })
 debug.registerPlugin(physicsDebugPlugin)
 
 initPane(debug)
@@ -26,10 +29,10 @@ camera.lookAt(0, 0, 0)
 
 scene.background = new THREE.Color('lightblue');
 
-const ambientLight = lights.createAmbient(undefined, 0.5)
+const ambientLight = new THREE.AmbientLight(undefined, 0.5)
 scene.add(ambientLight)
 
-const directionalLight = lights.createDirectional(undefined, 1.5)
+const directionalLight = new THREE.DirectionalLight(undefined, 1.5)
 scene.add(directionalLight)
 
 directionalLight.position.set(1, 5, 1)
@@ -77,6 +80,8 @@ directionalLight.shadow.camera.far = 20
   })
 }
 
+console.log(9)
+
 {
   const size = 30
   const sizeY = 0.5
@@ -99,5 +104,5 @@ directionalLight.shadow.camera.far = 20
 const savedDemo = window.localStorage.getItem('demo') || 'boxes'
 await demos[`./demos/${savedDemo}.ts`]()
 
-run()
 sword.run()
+console.log(10)

@@ -1,6 +1,8 @@
 import * as THREE from 'three'
-import { scene } from 'three-kit'
+import { three } from 'trzy'
 import { NUM_MESHES } from '../../constants'
+
+const { scene } = three()
 
 export const size = 1
 const geometry = new THREE.BoxGeometry(size, size, size)

@@ -1,6 +1,8 @@
 import * as THREE from 'three'
 import * as sword from '../../../src/main'
-import { scene, xr } from 'three-kit'
+import { three, xr } from 'trzy'
+
+const { scene } = three()
 
 export const floorSize = 20
 export const floorHeight = 0.3

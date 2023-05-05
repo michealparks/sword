@@ -1,10 +1,13 @@
 import * as THREE from 'three'
-import { controls, update } from 'three-kit'
 import * as sword from '../../src/main'
+import { three, useKeyboard } from 'trzy'
 import { boxes, halfExtents } from './lib/boxes'
 import { player } from './lib/player'
 import { randomColor } from './lib/colors'
 import { NUM_MESHES } from '../constants'
+
+const { update } = three()
+const { keyboard } = useKeyboard()
 
 const color = new THREE.Color()
 const matrix = new THREE.Matrix4()
@@ -47,8 +50,8 @@ sword.setActiveCollisionTypes(
 
 update(() => {
   const { position, quaternion, rotation } = player
-  position.x += controls.keyboard.x / 5
-  position.z -= controls.keyboard.y / 5
+  position.x += keyboard.x / 5
+  position.z -= keyboard.y / 5
 
   rotation.y += 0.1
 

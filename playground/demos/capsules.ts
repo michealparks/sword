@@ -1,8 +1,10 @@
 import * as THREE from 'three'
-import { scene } from 'three-kit'
 import * as sword from '../../src/main'
 import { randomColor } from './lib/colors'
 import { NUM_MESHES } from '../constants'
+import { three } from 'trzy'
+
+const { scene } = three()
 
 const resolution = 8
 const radius = 0.25
@@ -46,4 +48,3 @@ for (const id of ids) {
     // console.log('start', id, args)
   })
 }
-

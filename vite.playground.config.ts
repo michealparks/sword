@@ -9,11 +9,16 @@ export default defineConfig({
     minify: true,
     target: 'esnext',
   },
-  envPrefix: ['SWORD'],
   plugins: [
     mkcert(),
     wasm(),
   ],
+  worker: {
+    format: "es",
+    plugins: [
+      wasm(),
+    ]
+  },
   publicDir: 'assets',
   server: {
     fs: {

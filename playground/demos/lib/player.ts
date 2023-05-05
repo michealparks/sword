@@ -1,5 +1,7 @@
 import * as THREE from 'three'
-import { scene } from 'three-kit'
+import { three } from 'trzy'
+
+const { scene } = three()
 
 const playerGeo = new THREE.BoxGeometry(2, 2, 2)
 const playerMat = new THREE.MeshStandardMaterial({ color: 'lightblue' })

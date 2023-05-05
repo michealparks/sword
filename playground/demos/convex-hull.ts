@@ -1,15 +1,17 @@
 import * as THREE from 'three'
+import { three, loadGLTF } from 'trzy'
 import * as constants from '../constants'
 import * as sword from '../../src/main'
-import { scene, assets } from 'three-kit'
 import { NUM_MESHES } from '../constants'
 import { addKeyEvents } from '../lib/key-events'
+
+const { scene } = three()
 
 const matrix = new THREE.Matrix4()
 
 const [ship, asteroid] = await Promise.all([
-  assets.loadGLTF('ship.glb'),
-  assets.loadGLTF('asteroid.glb'),
+  loadGLTF('glb/ship.glb'),
+  loadGLTF('glb/asteroid.glb'),
 ])
 
 const template = asteroid.scene.getObjectByName('Asteroid') as THREE.Mesh

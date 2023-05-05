@@ -1,6 +1,8 @@
 import * as THREE from 'three'
-import { scene } from 'three-kit'
+import { three } from 'trzy'
 import { NUM_MESHES } from '../../constants'
+
+const { scene } = three()
 
 export const radius = 0.4
 
