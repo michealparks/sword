@@ -31,6 +31,6 @@ export const emit = (event: Events, data?: unknown) => {
   const channel = events.get(event)!
 
   for (let i = 0, l = channel.length; i < l; i += 1) {
-    channel[i](data)
+    channel[i]!(data)
   }
 }

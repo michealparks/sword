@@ -1,6 +1,6 @@
 import * as sword from '../main'
 import type Inspector from 'three-inspect'
-import { setDebugDraw } from './renderer'
+// import { setDebugDraw } from './renderer'
 
 const params = {
   debugDraw: false,
@@ -8,22 +8,24 @@ const params = {
   fps: 0,
 }
 
-export const physicsDebugPlugin = (debug: Inspector) => {
-  const draw = localStorage.getItem('sword.debugDraw') !== null
+export const physicsDebugPlugin = (inspector: Inspector) => {
+  const pane = inspector.addPane('Physics')
 
-  if (draw) {
-    setDebugDraw(true)
-  }
+  // const draw = localStorage.getItem('sword.debugDraw') !== null
 
-  const pane = debug.addPane('Physics')
-  pane.addInput(params, 'debugDraw').on('change', () => {
-    setDebugDraw(params.debugDraw)
-    if (params.debugDraw) {
-      localStorage.setItem('sword.debugDraw', '')
-    } else {
-      localStorage.removeItem('sword.debugDraw')
-    }
-  })
+  // if (draw) {
+  //   setDebugDraw(true)
+  // }
+
+  
+  // pane.addInput(params, 'debugDraw').on('change', () => {
+  //   setDebugDraw(params.debugDraw)
+  //   if (params.debugDraw) {
+  //     localStorage.setItem('sword.debugDraw', '')
+  //   } else {
+  //     localStorage.removeItem('sword.debugDraw')
+  //   }
+  // })
 
   const monitors: ({ refresh(): void })[] = []
 
@@ -41,7 +43,7 @@ export const physicsDebugPlugin = (debug: Inspector) => {
     params.fps = sword.fps()
 
     for (let i = 0, l = monitors.length; i < l; i += 1) {
-      monitors[i].refresh()
+      monitors[i]!.refresh()
     }
   }
 

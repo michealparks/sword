@@ -1,4 +1,3 @@
-/* eslint-disable no-shadow */
 export const enum RigidBodyType {
   // A RigidBodyType::Dynamic body can be affected by all external forces.
   Dynamic,

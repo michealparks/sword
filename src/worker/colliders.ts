@@ -21,15 +21,9 @@ export const createCollider = (options: RigidBodyWorkerOptions) => {
       options.collider1,
       options.collider2,
       options.vertices,
-      {
-        x: 1,
-        y: 1,
-        z: 1,
-      }
+      { x: 1, y: 1, z: 1 }
     )
   case ColliderType.Trimesh:
     return ColliderDesc.trimesh(options.vertices, options.indices ?? new Uint32Array(0))
   }
-
-  throw new Error('bodytype not supported')
 }

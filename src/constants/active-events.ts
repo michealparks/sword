@@ -1,4 +1,3 @@
-/* eslint-disable no-shadow */
 /**
  * Flags indicating what events are enabled for colliders.
  */

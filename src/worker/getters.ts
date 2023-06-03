@@ -18,7 +18,7 @@ export const getVelocities = (ids: Uint16Array, pid: number) => {
   const velocities = new Float32Array(ids.length * 6)
 
   for (let i = 0, j = 0, l = ids.length; i < l; i += 1, j += 6) {
-    const body = bodymap.get(ids[i])!
+    const body = bodymap.get(ids[i]!)!
     const linvel = body.linvel()
     const angvel = body.angvel()
 
@@ -34,5 +34,6 @@ export const getVelocities = (ids: Uint16Array, pid: number) => {
     event: events.GET_VELOCITIES,
     pid,
     velocities,
+    // @ts-ignore
   }, [velocities.buffer])
 }

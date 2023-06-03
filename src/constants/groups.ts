@@ -1,5 +1,3 @@
-/* eslint-disable no-shadow */
-
 /**
  * Collision groups for filtering.
  */

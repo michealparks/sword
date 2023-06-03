@@ -5,11 +5,12 @@ import * as sword from '../src/main'
 import { three } from 'trzy'
 import { physicsDebugPlugin } from '../src/debug'
 import { initPane } from './pane'
-console.log(1)
 
-const { scene, camera, renderer, update } = three()
+const { scene, camera, renderer, update } = three({
+  parameters: { antialias: true }
+})
 
-const debug = new Inspector({ THREE, scene, camera, renderer })
+const debug = new Inspector({ THREE, scene, camera: camera.current, renderer })
 debug.registerPlugin(physicsDebugPlugin)
 
 initPane(debug)
@@ -24,23 +25,26 @@ const fog = new THREE.Fog('lightblue')
 fog.far = 1000
 scene.fog = fog
 
-camera.position.set(10, 15, 25)
-camera.lookAt(0, 0, 0)
+camera.current.position.set(10, 15, 25)
+camera.current.lookAt(0, 0, 0)
 
 scene.background = new THREE.Color('lightblue');
 
-const ambientLight = new THREE.AmbientLight(undefined, 0.5)
+const ambientLight = new THREE.AmbientLight(undefined, 0.8)
 scene.add(ambientLight)
 
-const directionalLight = new THREE.DirectionalLight(undefined, 1.5)
+const directionalLight = new THREE.DirectionalLight(undefined, 2)
 scene.add(directionalLight)
 
+directionalLight.castShadow = true
 directionalLight.position.set(1, 5, 1)
-directionalLight.shadow.camera.left = -10
-directionalLight.shadow.camera.right = 10
-directionalLight.shadow.camera.top = 10
-directionalLight.shadow.camera.bottom = -10
-directionalLight.shadow.camera.far = 20
+
+const size = 20
+directionalLight.shadow.camera.left = -size
+directionalLight.shadow.camera.right = size
+directionalLight.shadow.camera.top = size
+directionalLight.shadow.camera.bottom = -size
+directionalLight.shadow.camera.far = 30
 
 {
   // Create sensor
@@ -80,8 +84,6 @@ directionalLight.shadow.camera.far = 20
   })
 }
 
-console.log(9)
-
 {
   const size = 30
   const sizeY = 0.5
@@ -105,4 +107,3 @@ const savedDemo = window.localStorage.getItem('demo') || 'boxes'
 await demos[`./demos/${savedDemo}.ts`]()
 
 sword.run()
-console.log(10)

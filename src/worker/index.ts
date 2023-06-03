@@ -64,7 +64,7 @@ const tick = () => {
   const transforms = []
 
   for (let i = 0, l = bodies.length; i < l; i += 1) {
-    const body = bodies[i]
+    const body = bodies[i]!
 
     if (body.isSleeping()) {
       continue
@@ -141,6 +141,7 @@ const tick = () => {
     event: events.TRANSFORMS,
     ids: idsArray,
     transforms: transformsArray,
+    //@ts-ignore
   }, [
     collisionEndArray.buffer,
     collisionStartArray.buffer,
@@ -161,6 +162,7 @@ const debugTick = () => {
     colors,
     event: events.DEBUG_DRAW,
     vertices,
+    // @ts-ignore
   }, [vertices.buffer, colors.buffer])
 }
 
@@ -210,11 +212,11 @@ const createMask = (groups: number[] = [], filter: number[] = []) => {
   const bits = new Array(32).fill(0)
 
   for (let i = 0, l = groups.length; i < l; i += 1) {
-    bits[groups[i]] = 1
+    bits[groups[i]!] = 1
   }
 
   for (let i = 0, l = filter.length; i < l; i += 1) {
-    bits[16 + filter[i]] = 1
+    bits[16 + filter[i]!] = 1
   }
 
   return bitmask.create(bits)
@@ -277,20 +279,20 @@ const createRigidBodies = (options: RigidBodyWorkerOptions & { pid: number }) =>
     if (options.disabled) {
       rigidBody.setTranslation({
         x: 0,
-        y: -2000 + (id * ((options.collider1 ?? -10) - 10)),
+        y: -2000 + (id * (('collider1' in options ? options.collider1 : -10) - 10)),
         z: 0,
       }, false)
     } else {
       rigidBody.setTranslation({
-        x: instances[j + 0],
-        y: instances[j + 1],
-        z: instances[j + 2],
+        x: instances[j + 0]!,
+        y: instances[j + 1]!,
+        z: instances[j + 2]!,
       }, false)
       rigidBody.setRotation({
-        w: instances[j + 3],
-        x: instances[j + 4],
-        y: instances[j + 5],
-        z: instances[j + 6],
+        w: instances[j + 3]!,
+        x: instances[j + 4]!,
+        y: instances[j + 5]!,
+        z: instances[j + 6]!,
       }, false)
     }
   }
@@ -299,6 +301,7 @@ const createRigidBodies = (options: RigidBodyWorkerOptions & { pid: number }) =>
     event: events.CREATE_RIGIDBODIES,
     ids,
     pid: options.pid,
+    // @ts-ignore
   }, [ids.buffer])
 }
 

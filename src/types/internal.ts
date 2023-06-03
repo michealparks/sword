@@ -1,5 +1,5 @@
-import type { ColliderTypes, RigidBodyTypes } from './rigidbody'
-import type { ColliderType } from '../constants/collider'
+import type { RigidBodyTypes } from './rigidbody'
+import { ColliderType } from '../constants/collider'
 
 interface WorkerOptions {
   canSleep: boolean
@@ -14,7 +14,7 @@ interface WorkerOptions {
 }
 
 export interface PrimitiveRigidBodyWorkerOptions extends WorkerOptions {
-  collider: Omit<ColliderTypes, ColliderType.Trimesh | ColliderType.ConvexHull>
+  collider: ColliderType.Ball | ColliderType.Capsule | ColliderType.Cone | ColliderType.Cuboid | ColliderType.Cylinder
   // This is radius | hx
   collider1: number
   // This is halfHeight | hy
@@ -29,6 +29,15 @@ export interface VertexRigidBodyWorkerOptions extends WorkerOptions {
   vertices: Float32Array
 }
 
+export interface HeightfieldRigidBodyWorkerOptions extends WorkerOptions {
+  collider: ColliderType.Heightfield
+  collider1: number
+  collider2: number
+  indices?: Uint32Array
+  vertices: Float32Array
+}
+
 export type RigidBodyWorkerOptions =
   | PrimitiveRigidBodyWorkerOptions
   | VertexRigidBodyWorkerOptions
+  | HeightfieldRigidBodyWorkerOptions

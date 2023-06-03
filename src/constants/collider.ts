@@ -1,5 +1,3 @@
-/* eslint-disable no-shadow */
-
 /**
  * The shape of the collider.
  */

@@ -1,37 +1,40 @@
 {
   "compilerOptions": {
     "target": "ESNext",
+    "module": "ESNext",
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+
+    /**
+     * Typecheck JS in `.svelte` and `.js` files by default.
+     * Disable checkJs if you'd like to use dynamic types in JS.
+     * Note that setting allowJs false does not prevent the use
+     * of JS in `.svelte` files.
+     */
+    "allowJs": true,
+    "checkJs": true,
+    "verbatimModuleSyntax": true,
+
+    // Type-checking options
+    "strict": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
+    "exactOptionalPropertyTypes": true,
     "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,
-    "noImplicitThis": true,
-    // "noUncheckedIndexedAccess": true,
-    // "noPropertyAccessFromIndexSignature": true,
+    "noPropertyAccessFromIndexSignature": false,
+    "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "useDefineForClassFields": true,
-    "strict": true,
-    "strictBindCallApply": true,
-    "strictFunctionTypes": true,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true,
-    "useUnknownInCatchVariables": true,
-    
-    "module": "ESNext",
-    "lib": ["ESNext", "DOM", "WebWorker"],
-    "moduleResolution": "Node",
-    "declaration": true, // generates declaration files
-    "declarationMap": true,
-    "sourceMap": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "esModuleInterop": true,
-    "noEmit": true,
+    "declaration": true,
+    "removeComments": false,
     "skipLibCheck": true,
-    "importsNotUsedAsValues": "error"
+    "types": ["vite/client"],
+    "sourceMap": true,
+    "lib": ["ESNext", "DOM", "DOM.iterable", "scripthost"],
+    "outDir": "dist"
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.js", ".storybook/**/*.ts"],
+  "exclude": ["src/**/code.js"],
 }

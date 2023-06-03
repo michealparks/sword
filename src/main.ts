@@ -24,7 +24,7 @@ type Events = 'start' | 'end'
 const eventmap = new Map<string, Listener[]>()
 
 let loaded = false
-let readyPromise: (value: unknown) => void
+let readyPromise: (() => void) | undefined
 let currentFps = 0
 let isRunning = false
 
@@ -44,13 +44,13 @@ const emitCollision = (name: Events, id1: number, id2: number) => {
 
   if (channel1 !== undefined) {
     for (let i = 0, l = channel1.length; i < l; i += 1) {
-      channel1[i](id2)
+      channel1[i]!(id2)
     }
   }
 
   if (channel2 !== undefined) {
     for (let i = 0, l = channel2.length; i < l; i += 1) {
-      channel2[i](id1)
+      channel2[i]!(id1)
     }
   }
 }
@@ -65,13 +65,13 @@ const emitContact = (
 
   if (channel1 !== undefined) {
     for (let i = 0, l = channel1.length; i < l; i += 1) {
-      channel1[i](id2, p1x, p1y, p1z, p2x, p2y, p2z)
+      channel1[i]!(id2, p1x, p1y, p1z, p2x, p2y, p2z)
     }
   }
 
   if (channel2 !== undefined) {
     for (let i = 0, l = channel2.length; i < l; i += 1) {
-      channel2[i](id1, p2x, p2y, p2z, p1x, p1y, p1z)
+      channel2[i]!(id1, p2x, p2y, p2z, p1x, p1y, p1z)
     }
   }
 }
@@ -82,24 +82,24 @@ const emitCollisionEvents = (
   contactStart: Float32Array
 ) => {
   for (let i = 0, l = collisionStart.length; i < l; i += 2) {
-    emitCollision('start', collisionStart[i + 0], collisionStart[i + 1])
+    emitCollision('start', collisionStart[i + 0]!, collisionStart[i + 1]!)
   }
 
   for (let i = 0, l = collisionEnd.length; i < l; i += 2) {
-    emitCollision('end', collisionEnd[i + 0], collisionEnd[i + 1])
+    emitCollision('end', collisionEnd[i + 0]!, collisionEnd[i + 1]!)
   }
 
   for (let i = 0, l = contactStart.length; i < l; i += 8) {
     emitContact(
       'start',
-      contactStart[i + 0],
-      contactStart[i + 1],
-      contactStart[i + 2],
-      contactStart[i + 3],
-      contactStart[i + 4],
-      contactStart[i + 5],
-      contactStart[i + 6],
-      contactStart[i + 7]
+      contactStart[i + 0]!,
+      contactStart[i + 1]!,
+      contactStart[i + 2]!,
+      contactStart[i + 3]!,
+      contactStart[i + 4]!,
+      contactStart[i + 5]!,
+      contactStart[i + 6]!,
+      contactStart[i + 7]!
     )
   }
 }
@@ -115,7 +115,7 @@ export const ready = () => {
   }
 
   return new Promise((resolve) => {
-    readyPromise = resolve
+    readyPromise = (resolve as () => void)
   })
 }
 

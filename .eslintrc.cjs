@@ -55,6 +55,7 @@ module.exports = {
     'no-continue': 'off',
     'no-extra-parens': 'off',
     'no-magic-numbers': 'off',
+    'no-shadow': 'off',
     'no-ternary': 'off',
     'no-undefined': 'off',
     'object-curly-spacing': ['error', 'always'],
@@ -65,6 +66,7 @@ module.exports = {
     'quote-props': ['error', 'consistent-as-needed'],
     'quotes': ['error', 'single'],
     'semi': ['error', 'never'],
-    '@typescript-eslint/no-non-null-assertion': 'off'
+    '@typescript-eslint/no-non-null-assertion': 'off',
+    '@typescript-eslint/no-shadow': 'always'
   },
 }

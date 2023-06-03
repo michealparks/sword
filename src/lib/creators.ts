@@ -21,7 +21,7 @@ const quat = new THREE.Quaternion()
 export const createRigidBody = async (
   object: THREE.Object3D,
   options: RigidBodiesTypeOptions
-) => {
+): Promise<number> => {
   const { position, quaternion } = object
 
   const instances = new Float32Array(7)
@@ -39,35 +39,32 @@ export const createRigidBody = async (
     canSleep: options.canSleep ?? true,
     ccd: options.ccd ?? false,
     collider: options.collider,
-    collider1: options.hx ?? options.radius,
-    collider2: options.hy ?? options.halfHeight,
-    collider3: options.hz,
+    collider1: 'hx' in options ? options.hx : 'radius' in options ? options.radius : 0,
+    collider2: 'hy' in options ? options.hy : 'halfHeight' in options ? options.halfHeight : 0,
+    collider3: 'hz' in options ? options.hz : 0,
     density: options.density ?? 1,
     disabled: options.disabled,
     event: events.CREATE_RIGIDBODIES,
     events: options.events ?? -1,
     filter: options.filter,
     groups: options.groups,
-    indices: options.indices,
+    indices: 'indices' in options ? options.indices : undefined,
     instances,
     pid,
     type: options.type,
-    vertices: options.vertices,
+    vertices: 'vertices' in options ? options.vertices : undefined,
   } as RigidBodyWorkerOptions, [instances.buffer])
 
-  const ids = await createPromise(pid) as Uint16Array
+  const ids = await createPromise<Uint16Array>(pid)
 
   if (options.type === RigidBodyType.Dynamic) {
-    registerDynamicBody(object, ids[0])
+    registerDynamicBody(object, ids[0]!)
   }
 
-  return ids[0]
+  return ids[0]!
 }
 
-export const createRigidBodies = async (
-  mesh: THREE.InstancedMesh,
-  options: RigidBodiesTypeOptions
-) => {
+export const createRigidBodies = async (mesh: THREE.InstancedMesh, options: RigidBodiesTypeOptions): Promise<Uint16Array> => {
   const instances = new Float32Array(mesh.count * 7)
 
   for (let i = 0, j = 0, l = mesh.count; i < l; i += 1, j += 7) {
@@ -89,23 +86,23 @@ export const createRigidBodies = async (
     canSleep: options.canSleep ?? true,
     ccd: options.ccd ?? false,
     collider: options.collider,
-    collider1: options.hx ?? options.radius,
-    collider2: options.hy ?? options.halfHeight,
-    collider3: options.hz,
+    collider1: 'hx' in options ? options.hx : 'radius' in options ? options.radius : 0,
+    collider2: 'hy' in options ? options.hy : 'halfHeight' in options ? options.halfHeight : 0,
+    collider3: 'hz' in options ? options.hz : 0,
     density: options.density ?? 1,
     disabled: options.disabled,
     event: events.CREATE_RIGIDBODIES,
     events: options.events ?? -1,
     filter: options.filter,
     groups: options.groups,
-    indices: options.indices,
+    indices: 'indices' in options ? options.indices : undefined,
     instances,
     pid,
     type: options.type,
-    vertices: options.vertices,
+    vertices: 'vertices' in options ? options.vertices : undefined,
   } as RigidBodyWorkerOptions, [instances.buffer])
 
-  const ids = await createPromise(pid) as Uint16Array
+  const ids = await createPromise<Uint16Array>(pid)
 
   if (options.type === RigidBodyType.Dynamic) {
     registerInstancedDynamicBody(mesh, ids)

@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import * as sword from '../../../src/main'
-import { three, xr } from 'trzy'
+import { three } from 'trzy'
 
 const { scene } = three()
 
@@ -24,7 +24,3 @@ await sword.createRigidBody(floor, {
   hy: floorHeight / 2,
   hz: floorSize / 2,
 })
-
-if (import.meta.env.THREE_XR === 'true') {
-  xr.enableTeleport(floor)
-}

@@ -23,7 +23,7 @@ export const updateDebugDrawer = (vertices: Float32Array, colors: Float32Array) 
  * @param slowdown An optional multiplier on the framerate.
  * Default is 3 times slower than the physics frame.
  */
-export const setDebugDraw = (on: boolean, slowdown = 3) => {
+export const setDebugDraw = (on: boolean, slowdown = 3, scene: THREE.Scene) => {
   if (on) {
     scene.add(lines)
   } else {

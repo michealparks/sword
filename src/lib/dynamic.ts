@@ -25,7 +25,7 @@ export const registerInstancedDynamicBody = (
   bodies.push(mesh)
 
   for (let i = 0, l = ids.length; i < l; i += 1) {
-    bodymap.set(ids[i], {
+    bodymap.set(ids[i]!, {
       instance: i,
       object: mesh,
     })
@@ -34,32 +34,32 @@ export const registerInstancedDynamicBody = (
 
 export const updateDynamicBodies = (ids: Uint16Array, transforms: Float32Array) => {
   for (let i = 0, j = 0, l = ids.length; i < l; i += 1, j += 7) {
-    const { instance, object } = bodymap.get(ids[i])!
+    const { instance, object } = bodymap.get(ids[i]!)!
 
     if (instance === -1) {
       object.quaternion.set(
-        transforms[j + 3],
-        transforms[j + 4],
-        transforms[j + 5],
-        transforms[j + 6]
+        transforms[j + 3]!,
+        transforms[j + 4]!,
+        transforms[j + 5]!,
+        transforms[j + 6]!
       )
       object.position.set(
-        transforms[j + 0],
-        transforms[j + 1],
-        transforms[j + 2]
+        transforms[j + 0]!,
+        transforms[j + 1]!,
+        transforms[j + 2]!
       )
     } else if (object instanceof THREE.InstancedMesh) {
       quat.set(
-        transforms[j + 3],
-        transforms[j + 4],
-        transforms[j + 5],
-        transforms[j + 6]
+        transforms[j + 3]!,
+        transforms[j + 4]!,
+        transforms[j + 5]!,
+        transforms[j + 6]!
       )
       m4.makeRotationFromQuaternion(quat)
       m4.setPosition(
-        transforms[j + 0],
-        transforms[j + 1],
-        transforms[j + 2]
+        transforms[j + 0]!,
+        transforms[j + 1]!,
+        transforms[j + 2]!
       )
       object.setMatrixAt(instance, m4)
       object.instanceMatrix.needsUpdate = true
