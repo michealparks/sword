@@ -1,1 +1,0 @@
-import{t,B as a,d as n,I as o,N as r}from"./index-22fffa8c.js";const{scene:c}=t(),e=1,d=new a(e,e,e),h=new n,m=e/2,s=new o(d,h,r);s.name="box instances";s.castShadow=!0;s.receiveShadow=!0;c.add(s);export{s as b,m as h};
